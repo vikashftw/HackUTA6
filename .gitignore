@@ -1,2 +1,6 @@
 
 /backend/venv
+/backend/node_backend/node_modules
+/backend/streamlit/venv
+/backend/node_modules
+/streamlit/venv
