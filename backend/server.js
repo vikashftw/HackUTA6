@@ -1,13 +1,15 @@
 const express = require('express');
 const axios = require('axios');
 const app = express();
+const cors = require('cors');
 require('dotenv').config();
 const PORT = process.env.PORT || 3000;
 
+app.use(cors());
 app.use(express.json());
 
 app.post('/api/nearby-disasters', async (req, res) => {
-    const { latitude, longitude, radius = 250 } = req.body;
+    const { latitude, longitude, radius = 20000 } = req.body;
 
     try {
         const disasters = await fetchNearbyDisasters(latitude, longitude, radius);
