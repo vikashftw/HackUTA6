@@ -2,7 +2,7 @@ import streamlit as st
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 
-MONGO_URI = "mongodb+srv://aroudrathakur:horizonatlas@horizon.cbsjq.mongodb.net/?retryWrites=true&w=majority&appName=Horizon"
+MONGO_URI = "mongodb+srv://GxhNFKK2idTsQRdN:GxhNFKK2idTsQRdN@horizon.cbsjq.mongodb.net/?retryWrites=true&w=majority&appName=Horizon&tlsAllowInvalidCertificates=true"
 
 client = MongoClient(MONGO_URI, server_api=ServerApi('1'))
 db = client.relief_db
