@@ -50,10 +50,11 @@ export default function Index() {
   // Function to fetch disaster data from the backend
   const fetchDisasterData = async (latitude: number, longitude: number) => {
     try {
-      const response = await axios.post("http://YOUR_BACKEND_SERVER_URL/api/nearby-disasters", {
+      // Replace this with your actual backend URL
+      const response = await axios.post("http://localhost:3000/api/nearby-disasters", {
         latitude,
         longitude,
-        radius: 250, // Optional radius in km
+        radius: 2500, // Optional radius in km
       });
       setDisasters(response.data);
     } catch (error) {
