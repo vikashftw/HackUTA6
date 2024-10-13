@@ -12,7 +12,8 @@ import MapView, { Marker } from "react-native-maps";
 import Footer from "@/components/Footer";
 
 interface NearbyLocation {
-  id: number;
+  id?: string;
+  osmId?: string;
   type: string;
   name: string;
   lat: number;
@@ -169,15 +170,15 @@ export default function Index() {
                 pinColor="yellow"
               />
             ))}
-            {nearbyLocations.map((location) => (
+            {nearbyLocations.map((location, index) => (
               <Marker
-                key={`location-${location.id}`}
+                key={`location-${location.id || location.osmId || index}`}
                 coordinate={{
                   latitude: location.lat,
                   longitude: location.lon,
                 }}
                 title={location.name}
-                description={`Service: ${getMarkerType(location.type)}`}
+                description={`Type: ${location.type}`}
                 pinColor={getMarkerColor(location.type)}
               />
             ))}

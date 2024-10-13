@@ -5,13 +5,7 @@ import EmergencyButton from "./EmergencyCall";
 import { LinearGradient } from "expo-linear-gradient";
 import DisplayList from "./DisplayList";
 import axios from "axios";
-
-interface Region {
-  latitude: number;
-  longitude: number;
-  latitudeDelta: number;
-  longitudeDelta: number;
-}
+import * as Location from "expo-location";
 
 interface Client {
   _id: string;
@@ -25,39 +19,39 @@ interface Client {
 
 const Footer: React.FC = () => {
   const [isDisplayList, setDisplayList] = useState(false);
-  const [nearbyClients, setNearbyClients] = useState<Client[]>([]);
-  const [region, setRegion] = useState<Region | undefined>(undefined);
 
-  const fetchNearbyClients = async (latitude: number, longitude: number) => {
+  const handleEmergencyCall = async () => {
     try {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert("Permission to access location was denied");
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      const { latitude, longitude } = location.coords;
+
       const response = await axios.get(
         "http://100.83.200.110:3000/api/clients/nearby",
         {
           params: { latitude, longitude, maxDistance: 250000 },
         }
       );
-      setNearbyClients(response.data);
-    } catch (error) {
-      console.error("Error fetching nearby clients:", error);
-      Alert.alert("Error fetching nearby clients. Please try again later.");
-    }
-  };
 
-  const handleEmergencyCall = async () => {
-    if (nearbyClients.length === 0) {
-      Alert.alert("No nearby emergency services found.");
-      return;
-    }
+      const nearbyClients: Client[] = response.data;
 
-    const closestClient = nearbyClients[0];
+      if (nearbyClients.length === 0) {
+        Alert.alert("No nearby emergency services found.");
+        return;
+      }
 
-    try {
-      // Send alert to the closest client
+      const closestClient = nearbyClients[0];
+
       await axios.post("http://100.83.200.110:3000/api/clients/alert", {
         clientId: closestClient._id,
         location: {
-          latitude: region?.latitude,
-          longitude: region?.longitude,
+          latitude,
+          longitude,
         },
       });
 
@@ -66,8 +60,8 @@ const Footer: React.FC = () => {
         `Alert sent to ${closestClient.name}. They will contact you shortly.`
       );
     } catch (error) {
-      console.error("Error sending emergency alert:", error);
-      Alert.alert("Failed to send emergency alert. Please try again.");
+      console.error("Error in emergency call process:", error);
+      Alert.alert("Failed to process emergency call. Please try again.");
     }
   };
 
@@ -83,15 +77,12 @@ const Footer: React.FC = () => {
       >
         <FontAwesome name="search" size={34} color="white" />
       </TouchableOpacity>
-
       <View style={styles.emergencyButtonContainer}>
         <EmergencyButton onEmergencyCall={handleEmergencyCall} />
       </View>
-
       <TouchableOpacity id="profile-icon" style={styles.iconButton}>
         <Ionicons name="person-circle" size={38} color="white" />
       </TouchableOpacity>
-
       {isDisplayList && <DisplayList onClose={() => setDisplayList(false)} />}
     </LinearGradient>
   );
