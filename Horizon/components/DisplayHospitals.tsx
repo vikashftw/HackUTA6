@@ -12,8 +12,8 @@ import * as Location from "expo-location";
 
 interface Hospital {
   id: number;
-  name: string | null; // Allow null for name
-  distance: number | null; // Allow null for distance
+  name: string | null;
+  distance: number | null;
 }
 
 interface DisplayHospitalsProps {
@@ -82,8 +82,9 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-        <Text style={styles.closeText}>Close</Text>
+        <Text style={styles.closeText}>✖</Text>
       </TouchableOpacity>
+
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />
       ) : (
@@ -97,6 +98,7 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
           }
           contentContainerStyle={styles.listContainer}
           showsVerticalScrollIndicator={false}
+          style={styles.flatList}
         />
       )}
     </View>
@@ -108,24 +110,17 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: "white",
-    position: "absolute",
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    zIndex: 1000,
-    justifyContent: "center",
-    alignItems: "center",
   },
   closeButton: {
+    position: "absolute",
+    top: 20,
+    right: 20,
     padding: 10,
-    backgroundColor: "#3b5998",
-    borderRadius: 5,
-    alignItems: "center",
-    marginBottom: 10,
+    backgroundColor: "transparent",
   },
   closeText: {
-    color: "white",
+    fontSize: 24,
+    color: "#3b5998",
   },
   loader: {
     marginTop: 20,
@@ -133,6 +128,9 @@ const styles = StyleSheet.create({
   listContainer: {
     paddingBottom: 20,
     alignItems: "center",
+  },
+  flatList: {
+    flex: 1,
   },
   item: {
     marginVertical: 8,
