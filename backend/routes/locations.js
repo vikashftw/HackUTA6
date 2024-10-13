@@ -3,9 +3,9 @@ const axios = require('axios');
 const Client = require('../models/client');
 const router = express.Router();
 
-// Function to calculate distance between two points
+
 function calculateDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371; // Radius of the Earth in km
+    const R = 6371; 
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
     const a = 
@@ -13,7 +13,7 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
         Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
         Math.sin(dLon/2) * Math.sin(dLon/2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c; // Distance in km
+    return R * c; 
 }
 
 router.get('/nearby', async (req, res) => {
@@ -43,10 +43,10 @@ router.get('/nearby', async (req, res) => {
 
         console.log('Fetched locations:', locations);
 
-        // Create a Set to store unique locations
+        
         const uniqueLocations = new Set(locations.map(loc => JSON.stringify(loc)));
 
-        // Process each location
+        
         for (const location of locations) {
             if (location.name === 'Unknown') {
                 console.log('Skipping unknown location:', location);
@@ -62,15 +62,15 @@ router.get('/nearby', async (req, res) => {
                             type: 'Point',
                             coordinates: [location.lon, location.lat]
                         },
-                        capacity: 100, // Default capacity
-                        specialties: [location.type], // Default specialty based on type
+                        capacity: 100, 
+                        specialties: [location.type], 
                     },
                     { upsert: true, new: true, setDefaultsOnInsert: true }
                 );
                 console.log('Updated/Created client:', updatedClient);
                 
                 uniqueLocations.add(JSON.stringify({
-                    id: updatedClient._id, // Add this line
+                    id: updatedClient._id, 
                     osmId: updatedClient.osmId,
                     type: updatedClient.type,
                     name: updatedClient.name,
@@ -83,7 +83,6 @@ router.get('/nearby', async (req, res) => {
             }
         }
 
-        // Convert the Set back to an array of objects
         const allLocations = Array.from(uniqueLocations).map(locString => {
             const loc = JSON.parse(locString);
             return {
@@ -97,7 +96,6 @@ router.get('/nearby', async (req, res) => {
           })
           .filter(loc=> loc.name != 'Unknown');
 
-        // Filter locations based on the specified radius
         const filteredLocations = allLocations.filter(loc => 
             calculateDistance(latitude, longitude, loc.lat, loc.lon) <= radius / 1000
         );

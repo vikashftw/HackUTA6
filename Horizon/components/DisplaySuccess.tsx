@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-import axios from "axios";
 import { MaterialIcons } from "@expo/vector-icons";
 
 interface DisplaySuccessProps {
@@ -22,55 +21,17 @@ const DisplaySuccess: React.FC<DisplaySuccessProps> = ({
   latitude,
   longitude,
 }) => {
-  const [travelTime, setTravelTime] = useState<string | null>(null);
+  const [travelTime, setTravelTime] = useState<string | null>("15");
   const [loading, setLoading] = useState<boolean>(true);
   const [arrivalTime, setArrivalTime] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchTravelTime = async () => {
-      if (latitude && longitude) {
-        try {
-          const apiKey = "AIzaSyAJ3LGi3rxtn7vYFSJRIDuv8-4Q_s9LkeQ";
-          const response = await axios.get(
-            `https://maps.googleapis.com/maps/api/directions/json`,
-            {
-              params: {
-                origin: `${latitude},${longitude}`,
-                destination: ems_name,
-                key: apiKey,
-              },
-            }
-          );
-
-          if (response.data.routes.length > 0) {
-            const durationInSeconds =
-              response.data.routes[0].legs[0].duration.value;
-            const durationInMinutes = Math.ceil(durationInSeconds / 60);
-            setTravelTime(durationInMinutes.toString());
-            calculateArrivalTime(durationInSeconds);
-          } else {
-            const defaultDuration = 15 * 60;
-            setTravelTime("15");
-            calculateArrivalTime(defaultDuration);
-          }
-        } catch (error) {
-          console.error("Error fetching travel time:", error);
-          const defaultDuration = 15 * 60;
-          setTravelTime("15");
-          calculateArrivalTime(defaultDuration);
-        } finally {
-          setLoading(false);
-        }
-      } else {
-        setTravelTime("Location not available");
-        setLoading(false);
-      }
-    };
-
-    fetchTravelTime();
+    const defaultDuration = 15 * 60;
+    setTravelTime("15");
+    calculateArrivalTime(defaultDuration);
+    setLoading(false);
   }, [ems_name, latitude, longitude]);
 
-  // Calculate the estimated arrival time
   const calculateArrivalTime = (durationInSeconds: number) => {
     const now = new Date();
     const arrivalDate = new Date(now.getTime() + durationInSeconds * 1000);

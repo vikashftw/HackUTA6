@@ -8,7 +8,6 @@ import ProfilePage from "@/components/ProfilePage";
 import RegisterPage from "@/components/RegisterPage";
 import { UserProvider } from "@/components/UserContext";
 
-// Interfaces for data structures
 interface NearbyLocation {
   id?: string;
   osmId?: string;

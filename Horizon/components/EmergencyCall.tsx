@@ -1,4 +1,3 @@
-// EmergencyButton.tsx
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
@@ -32,8 +31,8 @@ const styles = StyleSheet.create({
   emergencyButton: {
     width: 115,
     height: 46,
-    backgroundColor: "#ff4b5c", // A striking red for the button
-    borderRadius: 15, // Curved edges
+    backgroundColor: "#ff4b5c", 
+    borderRadius: 15, 
     justifyContent: "center",
     alignItems: "center",
     shadowColor: "#000",

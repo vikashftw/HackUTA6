@@ -4,7 +4,7 @@ import time
 from datetime import datetime
 
 # Replace this with your Express server's URL
-API_BASE_URL = "http://localhost:3000/api/clients"  # Adjust if your server is on a different port or host
+API_BASE_URL = "http://localhost:3000/api/clients" 
 
 st.title("Horizon: Relief Provider and Client Management")
 

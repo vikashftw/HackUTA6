@@ -112,13 +112,13 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
 
 const styles = StyleSheet.create({
   container: {
-    position: "absolute", // Centering the content outside flexbox
+    position: "absolute", 
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    justifyContent: "center", // Centers vertically
-    alignItems: "center", // Centers horizontally
+    justifyContent: "center", 
+    alignItems: "center", 
     padding: 20,
     backgroundColor: "white",
   },

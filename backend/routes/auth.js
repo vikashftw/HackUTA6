@@ -9,7 +9,7 @@ router.post('/register', async (req, res) => {
     try {
         const { username, password, healthInfo } = req.body;
 
-        // Check if user already exists
+        
         const existingUser = await User.findOne({ username });
         if (existingUser) {
             return res.status(400).json({ message: 'Username already exists' });
@@ -65,7 +65,6 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    // If credentials are valid, create and send a token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     res.json({

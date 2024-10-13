@@ -12,7 +12,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors({
-  origin: '*', // Be more specific in production
+  origin: '*', 
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -21,7 +21,7 @@ app.use(express.json());
 mongoose.connect(process.env.MONGO_URI)
   .then(async () => {
     console.log('Connected to MongoDB Atlas');
-    await Client.init(); // This ensures indexes are created
+    await Client.init(); 
     console.log('Client model initialized');
   })
   .catch(err => console.error('Could not connect to MongoDB Atlas', err));

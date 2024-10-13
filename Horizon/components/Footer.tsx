@@ -64,7 +64,6 @@ const Footer: React.FC<FooterProps> = ({ goToRegister }) => {
       setLatitude(latitude);
       setLongitude(longitude);
   
-      // Send the request to get nearby clients
       const response = await axios.get(
         "http://100.83.200.110:3000/api/clients/nearby",
         {
@@ -80,7 +79,6 @@ const Footer: React.FC<FooterProps> = ({ goToRegister }) => {
   
       const closestClient = nearbyClients[0];
   
-      // Send the SOS alert with user information
       await axios.post(
         "http://100.83.200.110:3000/api/clients/alert",
         {
@@ -151,7 +149,7 @@ const Footer: React.FC<FooterProps> = ({ goToRegister }) => {
         <View style={styles.overlayContainer}>
           <DisplayProfile
             setDisplayProfile={setDisplayProfile}
-            goToRegister={goToRegister} // Pass the navigation function to go to register
+            goToRegister={goToRegister}
           />
         </View>
       )}

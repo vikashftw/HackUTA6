@@ -95,13 +95,13 @@ return (
 
 const styles = StyleSheet.create({
   gradient: {
-    flex: 1, // Ensure the gradient covers the entire screen
+    flex: 1, 
   },
   container: {
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-    flex: 1, // Allow the container to fill the available space
+    flex: 1, 
   },
   title: {
     fontSize: 28,

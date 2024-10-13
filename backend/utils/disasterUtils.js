@@ -31,7 +31,6 @@ async function fetchNearbyDisasters(latitude, longitude, radius) {
         const filteredEvents = filterNearbyEvents(deduplicatedData, latitude, longitude, radius, boundingBox);
         console.log('Filtered events:', JSON.stringify(filteredEvents, null, 2));
 
-        // Print distinct event types
         const distinctEventTypes = new Set(deduplicatedData.map(event => event.type));
         console.log('Distinct Event Types:', Array.from(distinctEventTypes));
 
@@ -76,7 +75,7 @@ function processEONETData(data) {
 }
 
 function calculateBoundingBox(lat, lon, radius) {
-    const earthRadius = 6371; // km
+    const earthRadius = 6371; 
     const latRadius = radius / earthRadius;
     const lonRadius = radius / (earthRadius * Math.cos(Math.PI * lat / 180));
     
@@ -101,7 +100,7 @@ function filterNearbyEvents(events, latitude, longitude, radius, boundingBox) {
 }
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371; // Earth's radius in km
+    const R = 6371; 
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
     const a = 
@@ -154,7 +153,7 @@ async function fetchGDACSData() {
         const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true });
         const result = await parser.parseStringPromise(response.data);
         const items = result.rss.channel.item;
-        return Array.isArray(items) ? items : [items]; // Ensure we always return an array
+        return Array.isArray(items) ? items : [items];
     } catch (error) {
         console.error('Error fetching GDACS data:', error);
         throw error;
@@ -171,7 +170,6 @@ function processGDACSData(data) {
             let lat = null;
             let lon = null;
 
-            // Check different possible structures for coordinates
             if (item['geo:Point'] && item['geo:Point']['geo:lat'] && item['geo:Point']['geo:long']) {
                 lat = parseFloat(item['geo:Point']['geo:lat']);
                 lon = parseFloat(item['geo:Point']['geo:long']);
@@ -185,7 +183,7 @@ function processGDACSData(data) {
                 id: item.guid ? (item.guid._ || item.guid) : null,
                 title: item.title,
                 type: item['dc:subject'] || 'Unknown',
-                coordinates: [lon, lat], // GeoJSON format
+                coordinates: [lon, lat], 
                 date: new Date(item.pubDate),
                 link: item.link,
                 description: item.description,
