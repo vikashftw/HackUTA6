@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
   View,
@@ -14,6 +15,7 @@ import DisplayList from "./DisplayList";
 import axios from "axios";
 import * as Location from "expo-location";
 import DisplaySuccess from "./DisplaySuccess";
+import { BlurView } from 'expo-blur'; // Added for the blur effect
 
 interface FooterProps {
   goToRegister: () => void;
@@ -124,12 +126,12 @@ const Footer: React.FC<FooterProps> = ({ goToRegister }) => {
 
       {/* Display Profile Page over the whole screen */}
       {isDisplayProfile && (
-        <View style={styles.overlayContainer}>
+        <BlurView intensity={80} style={styles.overlayContainer}>
           <DisplayProfile
             setDisplayProfile={setDisplayProfile}
             goToRegister={goToRegister} // Pass the navigation function to go to register
           />
-        </View>
+        </BlurView>
       )}
 
       {/* Display List Page */}
@@ -164,6 +166,15 @@ const styles = StyleSheet.create({
     padding: 8,
     justifyContent: "center",
     alignItems: "center",
+    // 3D effect for the icons
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.3,
+    shadowRadius: 15,
+    transform: [{ translateX: 0 }, { translateY: 0 }, { scale: 1.05 }],
+    backgroundColor: "#3b5998", // giving depth using background
+    borderRadius: 50,
+    elevation: 10,
   },
   emergencyButtonContainer: {
     position: "absolute",
@@ -182,7 +193,29 @@ const styles = StyleSheet.create({
     width: Dimensions.get("window").width,
     height: Dimensions.get("window").height,
     zIndex: 2000,
-    backgroundColor: "rgba(0, 0, 0, 0.8)",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // semi-transparent to enhance the blur
+  },
+  profileScreen: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 15,
+    transform: [{ scale: 1.05 }], // Scaling up slightly for 3D effect
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.4,
+    shadowRadius: 15,
+    elevation: 10,
+  },
+  searchScreen: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 15,
+    transform: [{ scale: 1.05 }],
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.4,
+    shadowRadius: 15,
+    elevation: 10,
   },
 });
 
