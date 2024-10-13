@@ -22,7 +22,7 @@ const DisplayList: React.FC<DisplayListProps> = ({ onClose }) => {
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-        <MaterialIcons name="local-police" size={30} color="white" />
+        <MaterialIcons name="close" size={30} color="white" />
       </TouchableOpacity>
     </View>
   );
@@ -31,7 +31,7 @@ const DisplayList: React.FC<DisplayListProps> = ({ onClose }) => {
 const styles = StyleSheet.create({
   listContainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
+    justifyContent: "flex-start",
     alignItems: "center",
     padding: 10,
     backgroundColor: "#3b5998",
