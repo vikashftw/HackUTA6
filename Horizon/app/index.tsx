@@ -4,6 +4,7 @@ import * as Location from "expo-location";
 import axios from "axios";
 import MapView, { Marker } from 'react-native-maps';
 import Footer from "@/components/Footer";
+import EmergencyButton from "@/components/EmergencyCall";
 
 
 interface NearbyLocation {
@@ -40,7 +41,7 @@ export default function Index() {
   const [location, setLocation] = useState<LocationObject | null>(null);
   const [disasters, setDisasters] = useState<Disaster[]>([]);
   const [loading, setLoading] = useState(true); // Start with loading set to true
-  const [region, setRegion] = useState<Region | null>(null); // State to handle map region
+  const [region, setRegion] = useState<Region | undefined>(undefined); // State to handle map region
   const [nearbyLocations, setNearbyLocations] = useState<NearbyLocation[]>([]);
 
   useEffect(() => {
@@ -122,7 +123,6 @@ export default function Index() {
       <Footer />
     </View>
   );
-=======
   const fetchNearbyLocations = async (latitude: number, longitude: number) => {
     try {
       const response = await axios.get("http://100.83.200.110:3000/api/locations/nearby", {
