@@ -1,5 +1,12 @@
 import React from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
 interface ProfilePageProps {
@@ -7,7 +14,10 @@ interface ProfilePageProps {
   goBackToMap: () => void;
 }
 
-const ProfilePage: React.FC<ProfilePageProps> = ({ goToRegister, goBackToMap }) => {
+const ProfilePage: React.FC<ProfilePageProps> = ({
+  goToRegister,
+  goBackToMap,
+}) => {
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
 
@@ -17,7 +27,10 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ goToRegister, goBackToMap }) 
   };
 
   return (
-    <LinearGradient colors={["#0f2027", "#203a43", "#2c5364"]} style={styles.gradient}>
+    <LinearGradient
+      colors={["#0f2027", "#203a43", "#2c5364"]}
+      style={styles.gradient}
+    >
       <View style={styles.container}>
         {/* Ensure all text is inside a <Text> component */}
         <Text style={styles.title}>Sign In</Text>
@@ -36,7 +49,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ goToRegister, goBackToMap }) 
           value={password}
           onChangeText={setPassword}
         />
-        
+
         {/* Sign In Button */}
         <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
           {/* Text must be wrapped inside <Text> */}

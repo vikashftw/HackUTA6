@@ -97,7 +97,7 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
               : Math.random().toString()
           }
           contentContainerStyle={styles.listContainer}
-          showsVerticalScrollIndicator={false}
+          showsVerticalScrollIndicator={true} // Enable scroll indicator
           style={styles.flatList}
         />
       ) : (
@@ -105,22 +105,16 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
       )}
 
       <Text>Hospitals count: {hospitals.length}</Text>
-      <Text>{loading ? "Loading" : "Error in Loading"}</Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    position: "absolute", // Centering the content outside flexbox
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: "center", // Centers vertically
-    alignItems: "center", // Centers horizontally
+    flex: 1, // Allow the container to take the full screen height
     padding: 20,
     backgroundColor: "white",
+    justifyContent: "center",
   },
   closeButton: {
     position: "absolute",
@@ -128,7 +122,7 @@ const styles = StyleSheet.create({
     right: 20,
     padding: 10,
     backgroundColor: "transparent",
-    zIndex: 1,
+    zIndex: 1, // Ensures the close button appears above other content
   },
   closeText: {
     fontSize: 24,
@@ -139,12 +133,9 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingBottom: 20,
-    alignItems: "stretch",
   },
   flatList: {
-    flexGrow: 1,
-    width: "100%",
-    maxWidth: 400,
+    flexGrow: 1, // Ensures FlatList grows and scrolls properly
   },
   item: {
     marginVertical: 8,
@@ -152,7 +143,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#f9f9f9",
     borderRadius: 5,
     width: "100%",
-    maxWidth: "100%",
   },
   name: {
     fontSize: 16,
