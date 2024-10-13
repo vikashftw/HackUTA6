@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { FontAwesome, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import DisplayHospitals from "./DisplayHospitals";
+import DisplayBloodBanks from "./DisplayBloodBank";
+import DisplayShelters from "./DisplayShelters";
 
 interface DisplayListProps {
   onClose: () => void;
@@ -9,6 +11,8 @@ interface DisplayListProps {
 
 const DisplayList: React.FC<DisplayListProps> = ({ onClose }) => {
   const [isDisplayHospital, setDisplayHospital] = useState(false);
+  const [isDisplayBloodBank, setDisplayBloodBank] = useState(false);
+  const [isDisplayShelter, setDisplayShelter] = useState(false);
 
   return (
     <View style={styles.listContainer}>
@@ -20,12 +24,20 @@ const DisplayList: React.FC<DisplayListProps> = ({ onClose }) => {
         <FontAwesome name="hospital-o" size={30} color="white" />
       </TouchableOpacity>
 
-      <TouchableOpacity id="shelter" style={styles.iconButton}>
+      <TouchableOpacity
+        id="shelter"
+        style={styles.iconButton}
+        onPress={() => setDisplayShelter(true)}
+      >
         <Ionicons name="home-outline" size={30} color="white" />
       </TouchableOpacity>
 
-      <TouchableOpacity id="police" style={styles.iconButton}>
-        <FontAwesome name="user-secret" size={30} color="white" />
+      <TouchableOpacity
+        id="police"
+        style={styles.iconButton}
+        onPress={() => setDisplayBloodBank(true)}
+      >
+        <FontAwesome name="tint" size={30} color="white" />
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.closeButton} onPress={onClose}>
@@ -34,6 +46,12 @@ const DisplayList: React.FC<DisplayListProps> = ({ onClose }) => {
 
       {isDisplayHospital && (
         <DisplayHospitals onClose={() => setDisplayHospital(false)} />
+      )}
+      {isDisplayShelter && (
+        <DisplayShelters onClose={() => setDisplayShelter(false)} />
+      )}
+      {isDisplayBloodBank && (
+        <DisplayBloodBanks onClose={() => setDisplayBloodBank(false)} />
       )}
     </View>
   );

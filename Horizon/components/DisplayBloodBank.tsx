@@ -11,18 +11,18 @@ import {
 import axios from "axios";
 import * as Location from "expo-location";
 
-interface Hospital {
+interface BloodBank {
   id: string;
   name: string | null;
   distance: number | null;
 }
 
-interface DisplayHospitalsProps {
+interface DisplayBloodBanksProps {
   onClose: () => void;
 }
 
-const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
-  const [hospitals, setHospitals] = useState<Hospital[]>([]);
+const DisplayBloodBanks: React.FC<DisplayBloodBanksProps> = ({ onClose }) => {
+  const [bloodBanks, setBloodBanks] = useState<BloodBank[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [userLocation, setUserLocation] = useState<{
     latitude: number;
@@ -30,7 +30,7 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
   } | null>(null);
 
   useEffect(() => {
-    const getUserLocationAndFetchHospitals = async () => {
+    const getUserLocationAndFetchBloodBanks = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status === "granted") {
         let location = await Location.getCurrentPositionAsync({});
@@ -41,16 +41,16 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
       }
     };
 
-    getUserLocationAndFetchHospitals();
+    getUserLocationAndFetchBloodBanks();
   }, []);
 
   useEffect(() => {
     if (userLocation) {
-      fetchHospitals(userLocation.latitude, userLocation.longitude);
+      fetchBloodBanks(userLocation.latitude, userLocation.longitude);
     }
   }, [userLocation]);
 
-  const fetchHospitals = async (latitude: number, longitude: number) => {
+  const fetchBloodBanks = async (latitude: number, longitude: number) => {
     try {
       const response = await axios.get(
         "http://100.83.200.110:3000/api/locations/nearby",
@@ -59,21 +59,21 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
         }
       );
 
-      const hospitalsData = response.data.filter(
-        (location: any) => location.type === "hospital"
+      const bloodBanksData = response.data.filter(
+        (location: any) => location.type === "bloodbank"
       );
 
-      setHospitals(hospitalsData.slice(0, 15));
+      setBloodBanks(bloodBanksData.slice(0, 15));
     } catch (error) {
-      console.error("Error fetching hospitals:", error);
+      console.error("Error fetching blood banks:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const renderItem = ({ item }: { item: Hospital }) => (
+  const renderItem = ({ item }: { item: BloodBank }) => (
     <View style={styles.item}>
-      <Text style={styles.name}>{item.name ? item.name : "Hospital"}</Text>
+      <Text style={styles.name}>{item.name ? item.name : "EMS"}</Text>
       <Text style={styles.distance}>
         {item.distance !== null ? `${item.distance} km` : "N/A"}
       </Text>
@@ -86,13 +86,13 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
         <Text style={styles.closeText}>✖</Text>
       </TouchableOpacity>
 
-      <Text style={styles.title}>Nearby Hospitals</Text>
+      <Text style={styles.title}>Nearby Blood Banks</Text>
 
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />
-      ) : hospitals.length > 0 ? (
+      ) : bloodBanks.length > 0 ? (
         <FlatList
-          data={hospitals}
+          data={bloodBanks}
           renderItem={renderItem}
           keyExtractor={(item) =>
             item.id !== undefined
@@ -104,10 +104,10 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
           style={styles.flatList}
         />
       ) : (
-        <Text>No hospitals found</Text>
+        <Text>No Blood Banks found</Text>
       )}
 
-      <Text style={styles.count}>Hospitals count: {hospitals.length}</Text>
+      <Text style={styles.count}>Blood Banks count: {bloodBanks.length}</Text>
     </View>
   );
 };
@@ -183,4 +183,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DisplayHospitals;
+export default DisplayBloodBanks;

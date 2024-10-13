@@ -11,18 +11,18 @@ import {
 import axios from "axios";
 import * as Location from "expo-location";
 
-interface Hospital {
+interface Shelter {
   id: string;
   name: string | null;
   distance: number | null;
 }
 
-interface DisplayHospitalsProps {
+interface DisplaySheltersProps {
   onClose: () => void;
 }
 
-const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
-  const [hospitals, setHospitals] = useState<Hospital[]>([]);
+const DisplayShelters: React.FC<DisplaySheltersProps> = ({ onClose }) => {
+  const [shelters, setShelters] = useState<Shelter[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [userLocation, setUserLocation] = useState<{
     latitude: number;
@@ -30,7 +30,7 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
   } | null>(null);
 
   useEffect(() => {
-    const getUserLocationAndFetchHospitals = async () => {
+    const getUserLocationAndFetchShelters = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status === "granted") {
         let location = await Location.getCurrentPositionAsync({});
@@ -41,16 +41,16 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
       }
     };
 
-    getUserLocationAndFetchHospitals();
+    getUserLocationAndFetchShelters();
   }, []);
 
   useEffect(() => {
     if (userLocation) {
-      fetchHospitals(userLocation.latitude, userLocation.longitude);
+      fetchShelters(userLocation.latitude, userLocation.longitude);
     }
   }, [userLocation]);
 
-  const fetchHospitals = async (latitude: number, longitude: number) => {
+  const fetchShelters = async (latitude: number, longitude: number) => {
     try {
       const response = await axios.get(
         "http://100.83.200.110:3000/api/locations/nearby",
@@ -59,21 +59,21 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
         }
       );
 
-      const hospitalsData = response.data.filter(
-        (location: any) => location.type === "hospital"
+      const sheltersData = response.data.filter(
+        (location: any) => location.type === "shelter"
       );
 
-      setHospitals(hospitalsData.slice(0, 15));
+      setShelters(sheltersData.slice(0, 15));
     } catch (error) {
-      console.error("Error fetching hospitals:", error);
+      console.error("Error fetching shelters:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const renderItem = ({ item }: { item: Hospital }) => (
+  const renderItem = ({ item }: { item: Shelter }) => (
     <View style={styles.item}>
-      <Text style={styles.name}>{item.name ? item.name : "Hospital"}</Text>
+      <Text style={styles.name}>{item.name ? item.name : "Shelter"}</Text>
       <Text style={styles.distance}>
         {item.distance !== null ? `${item.distance} km` : "N/A"}
       </Text>
@@ -86,13 +86,13 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
         <Text style={styles.closeText}>✖</Text>
       </TouchableOpacity>
 
-      <Text style={styles.title}>Nearby Hospitals</Text>
+      <Text style={styles.title}>Nearby Shelters</Text>
 
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />
-      ) : hospitals.length > 0 ? (
+      ) : shelters.length > 0 ? (
         <FlatList
-          data={hospitals}
+          data={shelters}
           renderItem={renderItem}
           keyExtractor={(item) =>
             item.id !== undefined
@@ -104,10 +104,10 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
           style={styles.flatList}
         />
       ) : (
-        <Text>No hospitals found</Text>
+        <Text>No shelters found</Text>
       )}
 
-      <Text style={styles.count}>Hospitals count: {hospitals.length}</Text>
+      <Text style={styles.count}>Shelters count: {shelters.length}</Text>
     </View>
   );
 };
@@ -183,4 +183,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DisplayHospitals;
+export default DisplayShelters;
