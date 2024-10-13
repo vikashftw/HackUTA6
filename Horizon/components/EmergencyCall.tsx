@@ -32,8 +32,10 @@ const styles = StyleSheet.create({
   emergencyButton: {
     width: 100,
     height: 60,
+    paddingVertical: 12,
+    paddingHorizontal: 30,
     backgroundColor: "#ff4b5c",
-    borderRadius: 15,
+    borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
     shadowColor: "#000",
@@ -42,7 +44,7 @@ const styles = StyleSheet.create({
     shadowRadius: 11.14,
     elevation: -10,
     borderWidth: 2,
-    borderColor: "#ff858d", // Subtle border
+    borderColor: "#ff858d",
   },
   buttonText: {
     color: "#fff",
