@@ -1,14 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, TouchableOpacity, Dimensions, Alert } from "react-native";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+  Alert,
+} from "react-native";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import EmergencyButton from "./EmergencyCall";
 import { LinearGradient } from "expo-linear-gradient";
+
 import DisplayProfile from "./DisplayProfile";  // Default import from DisplayProfile.tsx
+
 import DisplayList from "./DisplayList";
 import axios from "axios";
 import * as Location from "expo-location";
-import { useUser } from './UserContext';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useUser } from "./UserContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import DisplaySuccess from "./DisplaySuccess";
 
 interface FooterProps {
   goToRegister: () => void;
@@ -27,11 +36,15 @@ interface Client {
 const Footer: React.FC<FooterProps> = ({ goToRegister }) => {
   const [isDisplayProfile, setDisplayProfile] = useState(false);
   const [isDisplayList, setDisplayList] = useState(false);
+  const [latitude, setLatitude] = useState<number>();
+  const [longitude, setLongitude] = useState<number>();
   const { user, setUser } = useUser();
-  
+  const [isDisplaySuccess, setDisplaySuccess] = useState(false);
+  const [isClientName, setClientName] = useState("");
+
   useEffect(() => {
     const checkUser = async () => {
-      const storedUser = await AsyncStorage.getItem('user');
+      const storedUser = await AsyncStorage.getItem("user");
       if (storedUser) {
         setUser(JSON.parse(storedUser));
       }
@@ -81,7 +94,7 @@ const Footer: React.FC<FooterProps> = ({ goToRegister }) => {
           longitude,
         },
         username: user.username,
-        healthInfo: user.healthInfo
+        healthInfo: user.healthInfo,
       });
 
       Alert.alert(
