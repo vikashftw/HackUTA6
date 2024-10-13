@@ -12,8 +12,8 @@ import * as Location from "expo-location";
 
 interface Hospital {
   id: number;
-  name: string;
-  distance: number;
+  name: string | null; // Allow null for name
+  distance: number | null; // Allow null for distance
 }
 
 interface DisplayHospitalsProps {
@@ -22,7 +22,7 @@ interface DisplayHospitalsProps {
 
 const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [userLocation, setUserLocation] = useState<{
     latitude: number;
     longitude: number;
@@ -72,8 +72,10 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
 
   const renderItem = ({ item }: { item: Hospital }) => (
     <View style={styles.item}>
-      <Text style={styles.name}>{item.name}</Text>
-      <Text style={styles.distance}>{item.distance} km</Text>
+      <Text style={styles.name}>{item.name ? item.name : "EMS"}</Text>
+      <Text style={styles.distance}>
+        {item.distance !== null ? `${item.distance} km` : "N/A"}
+      </Text>
     </View>
   );
 
