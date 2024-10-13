@@ -84,21 +84,27 @@ const DisplaySuccess: React.FC<DisplaySuccessProps> = ({
       <TouchableOpacity style={styles.closeButton} onPress={onClose}>
         <MaterialIcons name="close" size={24} color="black" />
       </TouchableOpacity>
-      <Text style={styles.title}>Help is on the way from {ems_name}</Text>
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />
-      ) : (
-        <>
-          <Text style={styles.travelTime}>
-            {travelTime
-              ? `Estimated time of arrival: ${travelTime} minutes`
-              : "No data"}
-          </Text>
-        </>
-      )}
-      {arrivalTime && (
-        <Text style={styles.arrivalTime}>Arriving at: {arrivalTime}</Text>
-      )}
+      <View style={styles.timeContainer}>
+        <Text style={styles.title}>Help is on the way from {ems_name}</Text>
+        {loading ? (
+          <ActivityIndicator
+            size="large"
+            color="#0000ff"
+            style={styles.loader}
+          />
+        ) : (
+          <>
+            <Text style={styles.travelTime}>
+              {travelTime
+                ? `Estimated time of arrival: ${travelTime} minutes`
+                : "No data"}
+            </Text>
+          </>
+        )}
+        {arrivalTime && (
+          <Text style={styles.arrivalTime}>Arriving at: {arrivalTime}</Text>
+        )}
+      </View>
     </View>
   );
 };
@@ -107,7 +113,6 @@ const styles = StyleSheet.create({
   container: {
     position: "absolute",
     bottom: 80,
-    top: 40,
     left: 0,
     right: 0,
     height: 300,
@@ -140,6 +145,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: "center",
     marginVertical: 10,
+  },
+  timeContainer: {
+    padding: 20,
   },
   arrivalTime: {
     fontSize: 18,
