@@ -29,7 +29,6 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
   } | null>(null);
 
   useEffect(() => {
-    // Get user location and fetch hospitals
     const getUserLocationAndFetchHospitals = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status === "granted") {
@@ -62,7 +61,8 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
       const hospitalsData = response.data.filter(
         (location: any) => location.type === "hospital"
       );
-      setHospitals(hospitalsData);
+
+      setHospitals(hospitalsData.slice(0, 15));
     } catch (error) {
       console.error("Error fetching hospitals:", error);
     } finally {
@@ -92,6 +92,7 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
           renderItem={renderItem}
           keyExtractor={(item) => item.id.toString()}
           contentContainerStyle={styles.listContainer}
+          showsVerticalScrollIndicator={false}
         />
       )}
     </View>
@@ -103,6 +104,14 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: "white",
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
+    justifyContent: "center",
+    alignItems: "center",
   },
   closeButton: {
     padding: 10,
@@ -119,12 +128,15 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingBottom: 20,
+    alignItems: "center",
   },
   item: {
     marginVertical: 8,
     padding: 15,
     backgroundColor: "#f9f9f9",
     borderRadius: 5,
+    width: "100%",
+    maxWidth: 400,
   },
   name: {
     fontSize: 16,
