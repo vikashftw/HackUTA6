@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
 import axios from 'axios';
+
+const markerImages = {
+  fire: require('./assets/fire-icon.png'),
+  flood: require('./assets/flood-icon.png'),
+  earthquake: require('./assets/earthquake-icon.png'),
+};
 
 const DisasterMap = () => {
   const [region, setRegion] = useState(null);
@@ -16,7 +22,12 @@ const DisasterMap = () => {
         return;
       }
 
-      let location = await Location.getCurrentPositionAsync({});
+      let location;
+      try {
+        location = await Location.getCurrentPositionAsync({});
+      } catch (error) {
+        console.error('Error fetching location:', error);
+      }
       setRegion({
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
@@ -33,7 +44,7 @@ const DisasterMap = () => {
       const response = await axios.post('http://100.83.200.110/api/disasters/nearby-disasters', {
         latitude,
         longitude,
-        radius: 50000 // adjust as needed
+        radius: 2500, // adjust as needed
       });
       setDisasters(response.data);
     } catch (error) {
@@ -47,7 +58,15 @@ const DisasterMap = () => {
 
   return (
     <View style={styles.container}>
-      <MapView style={styles.map} region={region}>
+      <MapView 
+        style={styles.map} 
+        region={region} 
+        provider={PROVIDER_GOOGLE} 
+        showsUserLocation={true} 
+        showsMyLocationButton={true} 
+        mapType='hybrid'
+      >
+        <Marker title="You are here" coordinate={region}  image={require('./assets/user-location-icon.png')}/>
         {disasters.map((disaster, index) => (
           <Marker
             key={index}
@@ -57,6 +76,7 @@ const DisasterMap = () => {
             }}
             title={disaster.title}
             description={`Type: ${disaster.type}, Date: ${new Date(disaster.date).toLocaleDateString()}`}
+            image={markerImages[disaster.type] || undefined}
           />
         ))}
       </MapView>
