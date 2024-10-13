@@ -24,7 +24,7 @@ async function registerTestUser() {
       username: 'testuser',
       password: 'testpassword',
       userType: 'individual',
-      medicalDetails: {
+      healthInfo: {
         bloodType: 'A+',
         allergies: ['Peanuts'],
         medications: ['Aspirin'],
