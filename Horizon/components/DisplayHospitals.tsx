@@ -6,7 +6,6 @@ import {
   FlatList,
   ActivityIndicator,
   TouchableOpacity,
-  Dimensions,
 } from "react-native";
 import axios from "axios";
 import * as Location from "expo-location";
@@ -86,8 +85,6 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
         <Text style={styles.closeText}>✖</Text>
       </TouchableOpacity>
 
-      <Text style={styles.title}>Nearby Hospitals</Text>
-
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />
       ) : hospitals.length > 0 ? (
@@ -107,59 +104,47 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
         <Text>No hospitals found</Text>
       )}
 
-      <Text style={styles.count}>Hospitals count: {hospitals.length}</Text>
+      <Text>Hospitals count: {hospitals.length}</Text>
+      <Text>{loading ? "Loading" : "Error in Loading"}</Text>
     </View>
   );
 };
 
-const { height } = Dimensions.get('window');
-
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    bottom: 80, // Adjust this value based on your footer height
+    position: "absolute", // Centering the content outside flexbox
+    top: 0,
     left: 0,
     right: 0,
-    height: height / 2, // Takes half the screen height
-    backgroundColor: "white",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    bottom: 0,
+    justifyContent: "center", // Centers vertically
+    alignItems: "center", // Centers horizontally
     padding: 20,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: -2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    backgroundColor: "white",
   },
   closeButton: {
     position: "absolute",
-    top: 10,
-    right: 10,
+    top: 20,
+    right: 20,
     padding: 10,
+    backgroundColor: "transparent",
     zIndex: 1,
   },
   closeText: {
     fontSize: 24,
     color: "#3b5998",
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    textAlign: 'center',
-  },
   loader: {
-    flex: 1,
-    justifyContent: 'center',
+    marginTop: 20,
   },
   listContainer: {
-    paddingHorizontal: 10,
+    paddingBottom: 20,
+    alignItems: "stretch",
   },
   flatList: {
-    flex: 1,
+    flexGrow: 1,
+    width: "100%",
+    maxWidth: 400,
   },
   item: {
     marginVertical: 8,
@@ -167,6 +152,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f9f9f9",
     borderRadius: 5,
     width: "100%",
+    maxWidth: "100%",
   },
   name: {
     fontSize: 16,
@@ -175,11 +161,6 @@ const styles = StyleSheet.create({
   distance: {
     fontSize: 14,
     color: "#666",
-  },
-  count: {
-    textAlign: 'center',
-    marginTop: 10,
-    color: '#666',
   },
 });
 

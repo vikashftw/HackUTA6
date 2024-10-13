@@ -32,8 +32,8 @@ const styles = StyleSheet.create({
   emergencyButton: {
     width: 115,
     height: 46,
-    backgroundColor: "#ff4b5c",
-    borderRadius: 15,
+    backgroundColor: "#ff4b5c", // A striking red for the button
+    borderRadius: 15, // Curved edges
     justifyContent: "center",
     alignItems: "center",
     shadowColor: "#000",
