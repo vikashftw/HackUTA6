@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, ActivityIndicator, Alert, StyleSheet } from "react-native";
-import * as Location from "expo-location"; // For getting user location
+import { StyleSheet, Text, View, ActivityIndicator, Alert } from "react-native";
+import * as Location from "expo-location";
 import axios from "axios";
 import MapView, { Marker } from 'react-native-maps'; // For displaying disasters on a map
 import EmergencyButton from "@/components/EmergencyCall"; // Adjust the import path as needed
@@ -94,11 +94,9 @@ export default function Index() {
       {loading ? (
         <ActivityIndicator size="large" color="#fff" />
       ) : (
-        <>
-          {/* Show the map view if the region is set */}
-          {region && (
+          region && (
             <MapView
-              style={{ width: '100%', height: '50%' }}
+              style={styles.map}
               region={region}
             >
               {disasters.map((disaster, index) => (
@@ -113,35 +111,7 @@ export default function Index() {
                 />
               ))}
             </MapView>
-          )}
-
-          {/* Show disaster data list */}
-          <View style={{ flex: 1, padding: 20 }}>
-            {location && (
-              <Text style={styles.text}>
-                Latitude: {location.coords.latitude}, Longitude: {location.coords.longitude}
-              </Text>
-            )}
-            <View style={{ marginTop: 20 }}>
-              {disasters.length > 0 ? (
-                disasters.map((disaster, index) => (
-                  <View key={index} style={{ marginBottom: 15 }}>
-                    <Text style={styles.title}>{disaster.title}</Text>
-                    <Text style={styles.text}>Type: {disaster.type}</Text>
-                    <Text style={styles.text}>
-                      Date: {new Date(disaster.date).toLocaleString()}
-                    </Text>
-                    <Text style={styles.text}>
-                      Coordinates: {disaster.coordinates.join(", ")}
-                    </Text>
-                  </View>
-                ))
-              ) : (
-                <Text style={styles.text}>No disasters found in your area.</Text>
-              )}
-            </View>
-          </View>
-        </>
+          )
       )}
       {/* Add the Emergency Button */}
       <EmergencyButton />
@@ -149,22 +119,12 @@ export default function Index() {
   );
 }
 
-// Dark mode styling for the entire screen
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#121212", // Dark background for dark mode
-    justifyContent: "center",
-    alignItems: "center",
-    paddingBottom: 80, // Padding for emergency button at the bottom
   },
-  text: {
-    color: "#fff", // White text for contrast
-    fontSize: 16,
-  },
-  title: {
-    color: "#ff4b5c", // Red title to match the emergency button theme
-    fontWeight: "bold",
-    fontSize: 18,
+  map: {
+    width: '100%',
+    height: '100%',
   },
 });
