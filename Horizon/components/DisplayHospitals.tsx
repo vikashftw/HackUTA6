@@ -111,7 +111,7 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, // Allow the container to take the full screen height
+    flex: 0.5, // Allow the container to take the full screen height
     padding: 20,
     backgroundColor: "white",
     justifyContent: "center",
