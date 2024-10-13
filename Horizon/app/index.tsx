@@ -9,7 +9,8 @@ import RegisterPage from "@/components/RegisterPage";
 
 // Interfaces for data structures
 interface NearbyLocation {
-  id: number;
+  id?: string;
+  osmId?: string;
   type: string;
   name: string;
   lat: number;
@@ -119,7 +120,7 @@ const Index: React.FC = () => {
       case "shelter":
         return "Shelter";
       case "blood_donation":
-        return "Blood Bank";
+        return "Blood Bank and Donations";
       default:
         return "Other EMS";
     }
@@ -201,6 +202,47 @@ const Index: React.FC = () => {
 
   return renderPage();
 };
+=======
+  return (
+    <View style={styles.container}>
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        region && (
+          <MapView style={styles.map} region={region}>
+            {disasters.map((disaster, index) => (
+              <Marker
+                key={`disaster-${index}`}
+                coordinate={{
+                  latitude: disaster.coordinates[1],
+                  longitude: disaster.coordinates[0],
+                }}
+                title={disaster.title}
+                description={`Type: ${disaster.type}, Date: ${new Date(
+                  disaster.date
+                ).toLocaleString()}`}
+                pinColor="yellow"
+              />
+            ))}
+            {nearbyLocations.map((location, index) => (
+              <Marker
+                key={`location-${location.id || location.osmId || index}`}
+                coordinate={{
+                  latitude: location.lat,
+                  longitude: location.lon,
+                }}
+                title={location.name}
+                description={`Service: ${getMarkerType(location.type)}`}
+                pinColor={getMarkerColor(location.type)}
+              />
+            ))}
+          </MapView>
+        )
+      )}
+      <Footer />
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   mapContainer: {
