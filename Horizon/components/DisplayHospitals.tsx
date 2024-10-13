@@ -9,14 +9,11 @@ import {
 } from "react-native";
 import axios from "axios";
 import * as Location from "expo-location";
-import MapView, { Marker } from "react-native-maps";
 
 interface Hospital {
   id: number;
   name: string;
   distance: number;
-  lat: number;
-  lon: number;
 }
 
 interface DisplayHospitalsProps {
@@ -32,6 +29,7 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
   } | null>(null);
 
   useEffect(() => {
+    // Get user location and fetch hospitals
     const getUserLocationAndFetchHospitals = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status === "granted") {
@@ -81,34 +79,11 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
 
   return (
     <View style={styles.container}>
-      <MapView
-        style={styles.map}
-        initialRegion={{
-          latitude: userLocation ? userLocation.latitude : 37.78825,
-          longitude: userLocation ? userLocation.longitude : -122.4324,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}
-      >
-        {hospitals.map((hospital) => (
-          <Marker
-            key={hospital.id}
-            coordinate={{
-              latitude: hospital.lat,
-              longitude: hospital.lon,
-            }}
-            title={hospital.name}
-            description={`${hospital.distance} km away`}
-          />
-        ))}
-      </MapView>
-
       <TouchableOpacity style={styles.closeButton} onPress={onClose}>
         <Text style={styles.closeText}>Close</Text>
       </TouchableOpacity>
-
       {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />
       ) : (
         <FlatList
           data={hospitals}
@@ -124,9 +99,8 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  map: {
-    ...StyleSheet.absoluteFillObject,
+    padding: 20,
+    backgroundColor: "white",
   },
   closeButton: {
     padding: 10,
@@ -134,13 +108,15 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: "center",
     marginBottom: 10,
-    position: "absolute",
-    top: 10,
-    left: 10,
-    zIndex: 1,
   },
   closeText: {
     color: "white",
+  },
+  loader: {
+    marginTop: 20,
+  },
+  listContainer: {
+    paddingBottom: 20,
   },
   item: {
     marginVertical: 8,
@@ -155,15 +131,6 @@ const styles = StyleSheet.create({
   distance: {
     fontSize: 14,
     color: "#666",
-  },
-  listContainer: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: "rgba(255, 255, 255, 0.9)",
-    padding: 20,
-    maxHeight: "50%",
   },
 });
 
