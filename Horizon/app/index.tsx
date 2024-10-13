@@ -163,9 +163,9 @@ const Index: React.FC = () => {
                       pinColor="yellow"
                     />
                   ))}
-                  {nearbyLocations.map((location) => (
+                  {nearbyLocations.map((location, index) => (
                     <Marker
-                      key={`location-${location.id}`}
+                      key={`location-${location.id || location.osmId || index}`}
                       coordinate={{
                         latitude: location.lat,
                         longitude: location.lon,
@@ -202,47 +202,6 @@ const Index: React.FC = () => {
 
   return renderPage();
 };
-=======
-  return (
-    <View style={styles.container}>
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
-        region && (
-          <MapView style={styles.map} region={region}>
-            {disasters.map((disaster, index) => (
-              <Marker
-                key={`disaster-${index}`}
-                coordinate={{
-                  latitude: disaster.coordinates[1],
-                  longitude: disaster.coordinates[0],
-                }}
-                title={disaster.title}
-                description={`Type: ${disaster.type}, Date: ${new Date(
-                  disaster.date
-                ).toLocaleString()}`}
-                pinColor="yellow"
-              />
-            ))}
-            {nearbyLocations.map((location, index) => (
-              <Marker
-                key={`location-${location.id || location.osmId || index}`}
-                coordinate={{
-                  latitude: location.lat,
-                  longitude: location.lon,
-                }}
-                title={location.name}
-                description={`Service: ${getMarkerType(location.type)}`}
-                pinColor={getMarkerColor(location.type)}
-              />
-            ))}
-          </MapView>
-        )
-      )}
-      <Footer />
-    </View>
-  );
-}
 
 const styles = StyleSheet.create({
   mapContainer: {
