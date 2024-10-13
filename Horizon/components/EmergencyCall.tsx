@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.46,
     shadowRadius: 11.14,
-    elevation: 10,
+    elevation: 0,
     borderWidth: 2,
     borderColor: "#ff858d", // Subtle border
   },
