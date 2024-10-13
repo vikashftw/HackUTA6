@@ -1,6 +1,5 @@
 const express = require('express');
 const { fetchNearbyDisasters } = require('../utils/disasterUtils');
-const auth = require('../middleware/auth');
 
 const router = express.Router();
 

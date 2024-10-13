@@ -9,6 +9,7 @@ import axios from "axios";
 import * as Location from "expo-location";
 import { useUser } from './UserContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import DisplaySuccess from "./DisplaySuccess";
 
 interface FooterProps {
   goToRegister: () => void;
@@ -28,6 +29,11 @@ const Footer: React.FC<FooterProps> = ({ goToRegister }) => {
   const [isDisplayProfile, setDisplayProfile] = useState(false);
   const [isDisplayList, setDisplayList] = useState(false);
   const { user, setUser } = useUser();
+  const [latitude, setLatitude] = useState<number>();
+  const [longitude, setLongitude] = useState<number>();
+  const [isDisplaySuccess, setDisplaySuccess] = useState(false);
+  const [isClientName, setClientName] = useState("");
+
   
   useEffect(() => {
     const checkUser = async () => {
@@ -45,52 +51,73 @@ const Footer: React.FC<FooterProps> = ({ goToRegister }) => {
       setDisplayProfile(true);
       return;
     }
-
+  
     try {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         Alert.alert("Permission to access location was denied");
         return;
       }
-
+  
       let location = await Location.getCurrentPositionAsync({});
       const { latitude, longitude } = location.coords;
-
+      setLatitude(latitude);
+      setLongitude(longitude);
+  
+      // Send the request to get nearby clients
       const response = await axios.get(
         "http://100.83.200.110:3000/api/clients/nearby",
         {
           params: { latitude, longitude, maxDistance: 250000 },
         }
       );
-
-      const nearbyClients: Client[] = response.data;
-
+  
+      const nearbyClients = response.data;
       if (nearbyClients.length === 0) {
         Alert.alert("No nearby emergency services found.");
         return;
       }
-
+  
       const closestClient = nearbyClients[0];
-
-      await axios.post("http://100.83.200.110:3000/api/clients/alert", {
-        clientId: closestClient._id,
-        location: {
-          latitude,
-          longitude,
-        },
-        username: user.username,
-        healthInfo: user.healthInfo
-      });
-
+  
+      // Send the SOS alert with user information
+      await axios.post(
+        "http://100.83.200.110:3000/api/clients/alert",
+        {
+          clientId: closestClient._id,
+          location: {
+            latitude,
+            longitude,
+          },
+          userInfo: {
+            name: user.username,
+            healthInfo: user.healthInfo
+          }
+        }
+      );
+  
       Alert.alert(
         "Emergency Alert Sent",
-        `Alert sent to ${closestClient.name}. They will contact you shortly.`
+        `Alert sent to ${closestClient.name}. They will contact you shortly.`,
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              setTimeout(() => {
+                setDisplaySuccess(true);
+                setClientName(closestClient.name);
+              }, 2000);
+            },
+          },
+        ]
       );
     } catch (error) {
       console.error("Error in emergency call process:", error);
       Alert.alert("Failed to process emergency call. Please try again.");
     }
   };
+  
+  
 
   return (
     <>
@@ -131,6 +158,7 @@ const Footer: React.FC<FooterProps> = ({ goToRegister }) => {
 
       {/* Display List Page */}
       {isDisplayList && <DisplayList onClose={() => setDisplayList(false)} />}
+      {isDisplaySuccess && (<DisplaySuccess onClose={() => setDisplaySuccess(false)} ems_name={isClientName} longitude={longitude} latitude={latitude} />)}
     </>
   );
 };
@@ -147,6 +175,7 @@ const styles = StyleSheet.create({
       left: 0,
       right: 0,
       zIndex: 1000,
+      paddingBottom: 20,
     },
     iconButton: {
       padding: 8,
