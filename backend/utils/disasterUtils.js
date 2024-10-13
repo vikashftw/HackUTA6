@@ -8,17 +8,14 @@ async function fetchNearbyDisasters(latitude, longitude, radius) {
             fetchGDACSData()
         ]);
 
-        
         console.log('Raw EONET data:', JSON.stringify(EONETdata, null, 2));
         console.log('Raw GDACS data:', JSON.stringify(GDACSdata, null, 2));
-
 
         const processedEONETData = processEONETData(EONETdata);
         const processedGDACSData = processGDACSData(GDACSdata);
 
         const allProcessedData = [...processedEONETData, ...processedGDACSData];
         console.log('All processed data:', JSON.stringify(allProcessedData, null, 2));
-
 
         if (allProcessedData.length === 0) {
             console.log('No events found in the processed data.');
@@ -31,10 +28,12 @@ async function fetchNearbyDisasters(latitude, longitude, radius) {
         const boundingBox = calculateBoundingBox(latitude, longitude, radius);
         console.log('Bounding box:', boundingBox);
 
-
         const filteredEvents = filterNearbyEvents(deduplicatedData, latitude, longitude, radius, boundingBox);
         console.log('Filtered events:', JSON.stringify(filteredEvents, null, 2));
 
+        // Print distinct event types
+        const distinctEventTypes = new Set(deduplicatedData.map(event => event.type));
+        console.log('Distinct Event Types:', Array.from(distinctEventTypes));
 
         return filteredEvents;
     } catch (error) {
@@ -208,7 +207,6 @@ function removeDuplicates(events) {
     });
     return Object.values(uniqueEvents);
 }
-
 
 module.exports = {
     fetchNearbyDisasters,
