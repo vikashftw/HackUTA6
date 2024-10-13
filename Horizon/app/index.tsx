@@ -186,7 +186,6 @@ export default function Index() {
         )
       )}
       <Footer />
-      <EmergencyButton />
     </View>
   );
 }
