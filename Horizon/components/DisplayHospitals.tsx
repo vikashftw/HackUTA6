@@ -90,7 +90,11 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
         <FlatList
           data={hospitals}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) =>
+            item.id !== undefined
+              ? item.id.toString()
+              : Math.random().toString()
+          }
           contentContainerStyle={styles.listContainer}
           showsVerticalScrollIndicator={false}
         />

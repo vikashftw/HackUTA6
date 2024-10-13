@@ -21,7 +21,6 @@ export default function EmergencyButton({
   );
 }
 
-// Styles for the emergency button and container
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
