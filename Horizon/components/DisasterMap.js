@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker , PROVIDER_GOOGLE} from 'react-native-maps';
 import * as Location from 'expo-location';
 import axios from 'axios';
 
@@ -47,7 +47,7 @@ const DisasterMap = () => {
 
   return (
     <View style={styles.container}>
-      <MapView style={styles.map} region={region}>
+      <MapView style={styles.map} region={region} provider={PROVIDER_GOOGLE} mapType='hybrid' showsUserLocation showsMyLocationButton>
         {disasters.map((disaster, index) => (
           <Marker
             key={index}

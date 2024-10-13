@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Text, View, ActivityIndicator, Alert } from "react-native";
 import * as Location from "expo-location";
 import axios from "axios";
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker } from "react-native-maps";
 
 interface LocationObject {
   coords: {
@@ -52,7 +52,10 @@ export default function Index() {
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
       });
-      fetchDisasterData(userLocation.coords.latitude, userLocation.coords.longitude);
+      fetchDisasterData(
+        userLocation.coords.latitude,
+        userLocation.coords.longitude
+      );
     } catch (error) {
       console.error("Error getting location:", error);
       Alert.alert("Error getting location. Please try again later.");
@@ -63,11 +66,14 @@ export default function Index() {
 
   const fetchDisasterData = async (latitude: number, longitude: number) => {
     try {
-      const response = await axios.post("http://100.83.200.110:3000/api/disasters/nearby-disasters", {
-        latitude,
-        longitude,
-        radius: 2500,
-      });
+      const response = await axios.post(
+        "http://100.83.200.110:3000/api/disasters/nearby-disasters",
+        {
+          latitude,
+          longitude,
+          radius: 2500,
+        }
+      );
       setDisasters(response.data || []);
     } catch (error) {
       console.error("Error fetching disaster data:", error);
@@ -83,10 +89,7 @@ export default function Index() {
       ) : (
         <>
           {region && (
-            <MapView
-              style={{ width: '100%', height: '50%' }}
-              region={region}
-            >
+            <MapView style={{ width: "100%", height: "50%" }} region={region}>
               {disasters.map((disaster, index) => (
                 <Marker
                   key={index}
@@ -95,7 +98,9 @@ export default function Index() {
                     longitude: disaster.coordinates[0],
                   }}
                   title={disaster.title}
-                  description={`Type: ${disaster.type}, Date: ${new Date(disaster.date).toLocaleString()}`}
+                  description={`Type: ${disaster.type}, Date: ${new Date(
+                    disaster.date
+                  ).toLocaleString()}`}
                 />
               ))}
             </MapView>
@@ -103,7 +108,8 @@ export default function Index() {
           <View style={{ flex: 1, padding: 20 }}>
             {location && (
               <Text>
-                Latitude: {location.coords.latitude}, Longitude: {location.coords.longitude}
+                Latitude: {location.coords.latitude}, Longitude:{" "}
+                {location.coords.longitude}
               </Text>
             )}
             <View style={{ marginTop: 20 }}>
@@ -112,7 +118,9 @@ export default function Index() {
                   <View key={index} style={{ marginBottom: 15 }}>
                     <Text style={{ fontWeight: "bold" }}>{disaster.title}</Text>
                     <Text>Type: {disaster.type}</Text>
-                    <Text>Date: {new Date(disaster.date).toLocaleString()}</Text>
+                    <Text>
+                      Date: {new Date(disaster.date).toLocaleString()}
+                    </Text>
                     <Text>Coordinates: {disaster.coordinates.join(", ")}</Text>
                   </View>
                 ))
