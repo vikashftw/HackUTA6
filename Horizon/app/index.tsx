@@ -129,7 +129,7 @@ export default function Index() {
         return "Hospital";
       case "shelter":
         return "Shelter";
-      case "blood_donations":
+      case "blood_donation":
         return "Blood Bank and Donations";
       default:
         return "Other EMS";
