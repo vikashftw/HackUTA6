@@ -15,7 +15,7 @@ export default function EmergencyButton({
         style={styles.emergencyButton}
         onPress={onEmergencyCall}
       >
-        <Text style={styles.buttonText}>Emergency Call</Text>
+        <Text style={styles.buttonText}>SOS</Text>
       </TouchableOpacity>
     </View>
   );
