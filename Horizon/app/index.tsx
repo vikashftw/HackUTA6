@@ -10,7 +10,6 @@ import * as Location from "expo-location";
 import axios from "axios";
 import MapView, { Marker } from "react-native-maps";
 import Footer from "@/components/Footer";
-import EmergencyButton from "@/components/EmergencyCall";
 
 interface NearbyLocation {
   id: number;
