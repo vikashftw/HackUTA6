@@ -20,7 +20,6 @@ interface NearbyLocation {
   lon: number;
 }
 
-// Define the types for better TypeScript support
 interface LocationObject {
   coords: {
     latitude: number;
@@ -45,8 +44,8 @@ interface Region {
 export default function Index() {
   const [location, setLocation] = useState<LocationObject | null>(null);
   const [disasters, setDisasters] = useState<Disaster[]>([]);
-  const [loading, setLoading] = useState(true); // Start with loading set to true
-  const [region, setRegion] = useState<Region | undefined>(undefined); // State to handle map region
+  const [loading, setLoading] = useState(true);
+  const [region, setRegion] = useState<Region | undefined>(undefined);
   const [nearbyLocations, setNearbyLocations] = useState<NearbyLocation[]>([]);
 
   useEffect(() => {
@@ -79,7 +78,6 @@ export default function Index() {
           userLocation.coords.longitude
         );
       }
-      // Fetch disaster data based on location
       fetchDisasterData(
         userLocation.coords.latitude,
         userLocation.coords.longitude
@@ -125,6 +123,19 @@ export default function Index() {
     }
   };
 
+  const getMarkerType = (type: string) => {
+    switch (type) {
+      case "hospital":
+        return "Hospital";
+      case "shelter":
+        return "Shelter";
+      case "Blood Bank and Donations":
+        return "blue";
+      default:
+        return "Other EMS";
+    }
+  };
+
   const getMarkerColor = (type: string) => {
     switch (type) {
       case "hospital":
@@ -167,7 +178,7 @@ export default function Index() {
                   longitude: location.lon,
                 }}
                 title={location.name}
-                description={`Type: ${location.type}`}
+                description={`Service: ${getMarkerType(location.type)}`}
                 pinColor={getMarkerColor(location.type)}
               />
             ))}
@@ -186,6 +197,6 @@ const styles = StyleSheet.create({
   },
   map: {
     width: "100%",
-    height: Dimensions.get("window").height - 80, // Subtract the height of the footer
+    height: Dimensions.get("window").height - 80,
   },
 });
