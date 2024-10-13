@@ -6,6 +6,7 @@ import {
   FlatList,
   ActivityIndicator,
   TouchableOpacity,
+  Dimensions,
 } from "react-native";
 import axios from "axios";
 import * as Location from "expo-location";
@@ -85,6 +86,8 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
         <Text style={styles.closeText}>✖</Text>
       </TouchableOpacity>
 
+      <Text style={styles.title}>Nearby Hospitals</Text>
+
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />
       ) : hospitals.length > 0 ? (
@@ -97,45 +100,66 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
               : Math.random().toString()
           }
           contentContainerStyle={styles.listContainer}
-          showsVerticalScrollIndicator={true} // Enable scroll indicator
+          showsVerticalScrollIndicator={false}
           style={styles.flatList}
         />
       ) : (
         <Text>No hospitals found</Text>
       )}
 
-      <Text>Hospitals count: {hospitals.length}</Text>
+      <Text style={styles.count}>Hospitals count: {hospitals.length}</Text>
     </View>
   );
 };
 
+const { height } = Dimensions.get('window');
+
 const styles = StyleSheet.create({
   container: {
-    flex: 0.5, // Allow the container to take the full screen height
-    padding: 20,
+    position: 'absolute',
+    bottom: 80, // Adjust this value based on your footer height
+    left: 0,
+    right: 0,
+    height: height / 2, // Takes half the screen height
     backgroundColor: "white",
-    justifyContent: "center",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: -2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   closeButton: {
     position: "absolute",
-    top: 20,
-    right: 20,
+    top: 10,
+    right: 10,
     padding: 10,
-    backgroundColor: "transparent",
-    zIndex: 1, // Ensures the close button appears above other content
+    zIndex: 1,
   },
   closeText: {
     fontSize: 24,
     color: "#3b5998",
   },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
   loader: {
-    marginTop: 20,
+    flex: 1,
+    justifyContent: 'center',
   },
   listContainer: {
-    paddingBottom: 20,
+    paddingHorizontal: 10,
   },
   flatList: {
-    flexGrow: 1, // Ensures FlatList grows and scrolls properly
+    flex: 1,
   },
   item: {
     marginVertical: 8,
@@ -151,6 +175,11 @@ const styles = StyleSheet.create({
   distance: {
     fontSize: 14,
     color: "#666",
+  },
+  count: {
+    textAlign: 'center',
+    marginTop: 10,
+    color: '#666',
   },
 });
 
