@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import MapView, { Marker , PROVIDER_GOOGLE} from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
 import axios from 'axios';
 
@@ -33,7 +33,7 @@ const DisasterMap = () => {
       const response = await axios.post('http://100.83.200.110/api/disasters/nearby-disasters', {
         latitude,
         longitude,
-        radius: 2500 // adjust as needed
+        radius: 2500, // adjust as needed
       });
       setDisasters(response.data);
     } catch (error) {
@@ -47,7 +47,14 @@ const DisasterMap = () => {
 
   return (
     <View style={styles.container}>
-      <MapView style={styles.map} region={region} provider={PROVIDER_GOOGLE} mapType='hybrid' showsUserLocation showsMyLocationButton>
+      <MapView 
+        style={styles.map} 
+        region={region} 
+        provider={PROVIDER_GOOGLE} 
+        showsUserLocation={true} 
+        showsMyLocationButton={true} 
+        mapType='hybrid'
+      >
         {disasters.map((disaster, index) => (
           <Marker
             key={index}
