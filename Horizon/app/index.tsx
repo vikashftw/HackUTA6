@@ -13,25 +13,13 @@ import Footer from "@/components/Footer";
 import EmergencyButton from "@/components/EmergencyCall";
 
 interface NearbyLocation {
-  id?: string;
-  osmId?: string;
+  id: number;
   type: string;
   name: string;
   lat: number;
   lon: number;
 }
 
-interface Client {
-  _id: string;
-  name: string;
-  location: {
-    coordinates: [number, number];
-  };
-  capacity: number;
-  specialties: string[];
-}
-
-// Define the types for better TypeScript support
 interface LocationObject {
   coords: {
     latitude: number;
@@ -59,7 +47,6 @@ export default function Index() {
   const [loading, setLoading] = useState(true);
   const [region, setRegion] = useState<Region | undefined>(undefined);
   const [nearbyLocations, setNearbyLocations] = useState<NearbyLocation[]>([]);
-  const [nearbyClients, setNearbyClients] = useState<Client[]>([]);
 
   useEffect(() => {
     getLocation();
@@ -86,8 +73,10 @@ export default function Index() {
         longitudeDelta: 0.0421,
       });
       if (userLocation) {
-        fetchNearbyLocations(userLocation.coords.latitude, userLocation.coords.longitude);
-        fetchNearbyClients(userLocation.coords.latitude, userLocation.coords.longitude);
+        fetchNearbyLocations(
+          userLocation.coords.latitude,
+          userLocation.coords.longitude
+        );
       }
       fetchDisasterData(
         userLocation.coords.latitude,
@@ -119,23 +108,14 @@ export default function Index() {
     }
   };
 
-  const fetchNearbyClients = async (latitude: number, longitude: number) => {
-    try {
-      const response = await axios.get("http://100.83.200.110:3000/api/clients/nearby", {
-        params: { latitude, longitude, maxDistance: 250000 }
-      });
-      setNearbyClients(response.data);
-    } catch (error) {
-      console.error("Error fetching nearby clients:", error);
-      Alert.alert("Error fetching nearby clients. Please try again later.");
-    }
-  };
-
   const fetchNearbyLocations = async (latitude: number, longitude: number) => {
     try {
-      const response = await axios.get<NearbyLocation[]>("http://100.83.200.110:3000/api/locations/nearby", {
-        params: { latitude, longitude, radius: 250000 }
-      });
+      const response = await axios.get(
+        "http://100.83.200.110:3000/api/locations/nearby",
+        {
+          params: { latitude, longitude, radius: 250000 },
+        }
+      );
       setNearbyLocations(response.data);
     } catch (error) {
       console.error("Error fetching nearby locations:", error);
@@ -156,74 +136,58 @@ export default function Index() {
     }
   };
 
-const handleEmergencyCall = async () => {
-  if (nearbyClients.length === 0) {
-    Alert.alert("No nearby emergency services found.");
-    return;
-  }
+  const getMarkerColor = (type: string) => {
+    switch (type) {
+      case "hospital":
+        return "red";
+      case "shelter":
+        return "green";
+      case "blood_donation":
+        return "blue";
+      default:
+        return "purple";
+    }
+  };
 
-  const closestClient = nearbyClients[0];
-
-  try {
-    // Send alert to the closest client
-    await axios.post("http://100.83.200.110:3000/api/clients/alert", {
-      clientId: closestClient._id,
-      location: {
-        latitude: region?.latitude,
-        longitude: region?.longitude
-      }
-    });
-
-    Alert.alert(
-      "Emergency Alert Sent",
-      `Alert sent to ${closestClient.name}. They will contact you shortly.`
-    );
-  } catch (error) {
-    console.error("Error sending emergency alert:", error);
-    Alert.alert("Failed to send emergency alert. Please try again.");
-  }
-};
-
-return (
-  <View style={styles.container}>
-    {loading ? (
-      <ActivityIndicator size="large" color="#fff" />
-    ) : (
-      region && (
-        <MapView
-          style={styles.map}
-          region={region}
-        >
-          {disasters.map((disaster, index) => (
-            <Marker
-              key={`disaster-${index}`}
-              coordinate={{
-                latitude: disaster.coordinates[1],
-                longitude: disaster.coordinates[0],
-              }}
-              title={disaster.title}
-              description={`Type: ${disaster.type}, Date: ${new Date(disaster.date).toLocaleString()}`}
-              pinColor="yellow"
-            />
-          ))}
-          {nearbyLocations.map((location, index) => (
-            <Marker
-              key={`location-${location.id || location.osmId || index}`}
-              coordinate={{
-                latitude: location.lat,
-                longitude: location.lon,
-              }}
-              title={location.name}
-              description={`Type: ${location.type}`}
-              pinColor={getMarkerColor(location.type)}
-            />
-          ))}
-        </MapView>
-      )
-    )}
-    <EmergencyButton onEmergencyCall={handleEmergencyCall}/>
-  </View>
-);
+  return (
+    <View style={styles.container}>
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        region && (
+          <MapView style={styles.map} region={region}>
+            {disasters.map((disaster, index) => (
+              <Marker
+                key={`disaster-${index}`}
+                coordinate={{
+                  latitude: disaster.coordinates[1],
+                  longitude: disaster.coordinates[0],
+                }}
+                title={disaster.title}
+                description={`Type: ${disaster.type}, Date: ${new Date(
+                  disaster.date
+                ).toLocaleString()}`}
+                pinColor="yellow"
+              />
+            ))}
+            {nearbyLocations.map((location) => (
+              <Marker
+                key={`location-${location.id}`}
+                coordinate={{
+                  latitude: location.lat,
+                  longitude: location.lon,
+                }}
+                title={location.name}
+                description={`Service: ${getMarkerType(location.type)}`}
+                pinColor={getMarkerColor(location.type)}
+              />
+            ))}
+          </MapView>
+        )
+      )}
+      <Footer />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
