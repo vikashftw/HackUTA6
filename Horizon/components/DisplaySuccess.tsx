@@ -49,13 +49,15 @@ const DisplaySuccess: React.FC<DisplaySuccessProps> = ({
             setTravelTime(durationInMinutes.toString());
             calculateArrivalTime(durationInSeconds);
           } else {
+            const defaultDuration = 15 * 60;
             setTravelTime("15");
-            calculateArrivalTime(15 * 60);
+            calculateArrivalTime(defaultDuration);
           }
         } catch (error) {
           console.error("Error fetching travel time:", error);
+          const defaultDuration = 15 * 60;
           setTravelTime("15");
-          calculateArrivalTime(15 * 60);
+          calculateArrivalTime(defaultDuration);
         } finally {
           setLoading(false);
         }
@@ -72,13 +74,9 @@ const DisplaySuccess: React.FC<DisplaySuccessProps> = ({
   const calculateArrivalTime = (durationInSeconds: number) => {
     const now = new Date();
     const arrivalDate = new Date(now.getTime() + durationInSeconds * 1000);
-    const options: Intl.DateTimeFormatOptions = {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    };
-    setArrivalTime(arrivalDate.toLocaleTimeString(undefined, options));
+    const hours = String(arrivalDate.getHours()).padStart(2, "0");
+    const minutes = String(arrivalDate.getMinutes()).padStart(2, "0");
+    setArrivalTime(`${hours}:${minutes}`);
   };
 
   return (
@@ -99,9 +97,7 @@ const DisplaySuccess: React.FC<DisplaySuccessProps> = ({
         </>
       )}
       {arrivalTime && (
-        <Text style={styles.arrivalTime}>
-          Local time of arrival: {arrivalTime}
-        </Text>
+        <Text style={styles.arrivalTime}>Arriving at: {arrivalTime}</Text>
       )}
     </View>
   );
@@ -136,7 +132,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "bold",
-    marginBottom: 10,
+    marginBottom: 20,
     textAlign: "center",
   },
   travelTime: {

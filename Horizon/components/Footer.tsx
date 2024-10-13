@@ -16,7 +16,7 @@ import * as Location from "expo-location";
 import DisplaySuccess from "./DisplaySuccess";
 
 interface FooterProps {
-  goToRegister: () => void; // Add this prop to handle registration navigation
+  goToRegister: () => void;
 }
 
 interface Client {
@@ -81,11 +81,10 @@ const Footer: React.FC<FooterProps> = ({ goToRegister }) => {
           {
             text: "OK",
             onPress: () => {
-              // Navigate to the next screen after 3 seconds
               setTimeout(() => {
                 setDisplaySuccess(true);
                 setClientName(closestClient.name);
-              }, 3000);
+              }, 2000);
             },
           },
         ]
