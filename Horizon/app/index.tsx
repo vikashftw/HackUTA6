@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, ActivityIndicator, Alert } from "react-native";
+import { StyleSheet, Text, View, ActivityIndicator, Alert } from "react-native";
 import * as Location from "expo-location";
 import axios from "axios";
 import MapView, { Marker } from 'react-native-maps';
@@ -81,10 +81,9 @@ export default function Index() {
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
-        <>
-          {region && (
+          region && (
             <MapView
-              style={{ width: '100%', height: '50%' }}
+              style={styles.map}
               region={region}
             >
               {disasters.map((disaster, index) => (
@@ -99,30 +98,18 @@ export default function Index() {
                 />
               ))}
             </MapView>
-          )}
-          <View style={{ flex: 1, padding: 20 }}>
-            {location && (
-              <Text>
-                Latitude: {location.coords.latitude}, Longitude: {location.coords.longitude}
-              </Text>
-            )}
-            <View style={{ marginTop: 20 }}>
-              {disasters.length > 0 ? (
-                disasters.map((disaster, index) => (
-                  <View key={index} style={{ marginBottom: 15 }}>
-                    <Text style={{ fontWeight: "bold" }}>{disaster.title}</Text>
-                    <Text>Type: {disaster.type}</Text>
-                    <Text>Date: {new Date(disaster.date).toLocaleString()}</Text>
-                    <Text>Coordinates: {disaster.coordinates.join(", ")}</Text>
-                  </View>
-                ))
-              ) : (
-                <Text>No disasters found in your area.</Text>
-              )}
-            </View>
-          </View>
-        </>
+          )
       )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  map: {
+    width: '100%',
+    height: '100%',
+  },
+});
