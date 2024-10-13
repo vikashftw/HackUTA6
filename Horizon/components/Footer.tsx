@@ -1,10 +1,16 @@
 import React, { useState } from "react";
-import { View, StyleSheet, TouchableOpacity, Dimensions, Alert } from "react-native";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+  Alert,
+} from "react-native";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
-import EmergencyButton from "./EmergencyCall";
+import EmergencyButton from "./EmergencyCall"; // Make sure this component accepts onEmergencyCall prop
 import { LinearGradient } from "expo-linear-gradient";
-import DisplayProfile from "./DisplayProfile";
-import DisplayList from "./DisplayList";
+import DisplayProfile from "./DisplayProfile"; // Ensure this component is imported correctly
+import DisplayList from "./DisplayList"; // Ensure this component is imported correctly
 import axios from "axios";
 import * as Location from "expo-location";
 
@@ -14,49 +20,6 @@ interface FooterProps {
 
 const Footer: React.FC<FooterProps> = ({ goToRegister }) => {
   const [isDisplayProfile, setDisplayProfile] = useState(false);
-
-  return (
-    <>
-      <LinearGradient colors={["#4c669f", "#3b5998", "#192f6a"]} style={styles.container}>
-        <TouchableOpacity id="search-icon" style={styles.iconButton}>
-          <FontAwesome name="search" size={34} color="white" />
-        </TouchableOpacity>
-
-        <View style={styles.emergencyButtonContainer}>
-          <EmergencyButton />
-        </View>
-
-        <TouchableOpacity
-          id="profile-icon"
-          style={styles.iconButton}
-          onPress={() => setDisplayProfile(true)}
-        >
-          <Ionicons name="person-circle" size={38} color="white" />
-        </TouchableOpacity>
-      </LinearGradient>
-
-      {/* Display Profile Page over the whole screen */}
-      {isDisplayProfile && (
-        <View style={styles.overlayContainer}>
-          <DisplayProfile
-            setDisplayProfile={setDisplayProfile}
-            goToRegister={goToRegister} // Pass the navigation function to go to register
-          />
-        </View>
-      )}
-    </>
-
-interface Client {
-  _id: string;
-  name: string;
-  location: {
-    coordinates: [number, number];
-  };
-  capacity: number;
-  specialties: string[];
-}
-
-const Footer: React.FC = () => {
   const [isDisplayList, setDisplayList] = useState(false);
 
   const handleEmergencyCall = async () => {
@@ -77,7 +40,7 @@ const Footer: React.FC = () => {
         }
       );
 
-      const nearbyClients: Client[] = response.data;
+      const nearbyClients = response.data;
 
       if (nearbyClients.length === 0) {
         Alert.alert("No nearby emergency services found.");
@@ -105,25 +68,45 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <LinearGradient
-      colors={["#4c669f", "#3b5998", "#192f6a"]}
-      style={styles.container}
-    >
-      <TouchableOpacity
-        id="search-icon"
-        style={styles.iconButton}
-        onPress={() => setDisplayList(true)}
+    <>
+      <LinearGradient
+        colors={["#4c669f", "#3b5998", "#192f6a"]}
+        style={styles.container}
       >
-        <FontAwesome name="search" size={34} color="white" />
-      </TouchableOpacity>
-      <View style={styles.emergencyButtonContainer}>
-        <EmergencyButton onEmergencyCall={handleEmergencyCall} />
-      </View>
-      <TouchableOpacity id="profile-icon" style={styles.iconButton}>
-        <Ionicons name="person-circle" size={38} color="white" />
-      </TouchableOpacity>
+        <TouchableOpacity
+          id="search-icon"
+          style={styles.iconButton}
+          onPress={() => setDisplayList(true)}
+        >
+          <FontAwesome name="search" size={34} color="white" />
+        </TouchableOpacity>
+
+        <View style={styles.emergencyButtonContainer}>
+          <EmergencyButton onEmergencyCall={handleEmergencyCall} />
+        </View>
+
+        <TouchableOpacity
+          id="profile-icon"
+          style={styles.iconButton}
+          onPress={() => setDisplayProfile(true)}
+        >
+          <Ionicons name="person-circle" size={38} color="white" />
+        </TouchableOpacity>
+      </LinearGradient>
+
+      {/* Display Profile Page over the whole screen */}
+      {isDisplayProfile && (
+        <View style={styles.overlayContainer}>
+          <DisplayProfile
+            setDisplayProfile={setDisplayProfile}
+            goToRegister={goToRegister} // Pass the navigation function to go to register
+          />
+        </View>
+      )}
+
+      {/* Display List */}
       {isDisplayList && <DisplayList onClose={() => setDisplayList(false)} />}
-    </LinearGradient>
+    </>
   );
 };
 
@@ -152,15 +135,15 @@ const styles = StyleSheet.create({
     zIndex: 1001,
   },
   overlayContainer: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
+    width: Dimensions.get("window").width,
+    height: Dimensions.get("window").height,
     zIndex: 2000,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    backgroundColor: "rgba(0, 0, 0, 0.8)",
   },
 });
 
