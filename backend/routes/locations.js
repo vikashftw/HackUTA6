@@ -48,6 +48,10 @@ router.get('/nearby', async (req, res) => {
 
         // Process each location
         for (const location of locations) {
+            if (location.name === 'Unknown') {
+                console.log('Skipping unknown location:', location);
+                continue;
+            }
             try {
                 const updatedClient = await Client.findOneAndUpdate(
                     { osmId: location.osmId },
@@ -83,14 +87,15 @@ router.get('/nearby', async (req, res) => {
         const allLocations = Array.from(uniqueLocations).map(locString => {
             const loc = JSON.parse(locString);
             return {
-              id: loc._id || loc.id,  // Use _id if it exists, otherwise use id
+              id: loc._id || loc.id,
               osmId: loc.osmId,
               type: loc.type,
               name: loc.name,
               lat: loc.lat || (loc.location && loc.location.coordinates[1]),
               lon: loc.lon || (loc.location && loc.location.coordinates[0])
             };
-          });
+          })
+          .filter(loc=> loc.name != 'Unknown');
 
         // Filter locations based on the specified radius
         const filteredLocations = allLocations.filter(loc => 
