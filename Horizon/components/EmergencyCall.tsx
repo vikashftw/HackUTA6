@@ -30,17 +30,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   emergencyButton: {
-    width: 250,
+    width: 100,
     height: 60,
-    backgroundColor: "#ff4b5c", // A striking red for the button
-    borderRadius: 15, // Curved edges
+    backgroundColor: "#ff4b5c",
+    borderRadius: 15,
     justifyContent: "center",
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.46,
     shadowRadius: 11.14,
-    elevation: 17, // 3D shadow effect
+    elevation: 10,
     borderWidth: 2,
     borderColor: "#ff858d", // Subtle border
   },
