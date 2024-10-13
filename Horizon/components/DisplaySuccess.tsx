@@ -105,7 +105,7 @@ const DisplaySuccess: React.FC<DisplaySuccessProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    position: "relative",
+    position: "absolute",
     bottom: 80,
     top: 40,
     left: 0,
