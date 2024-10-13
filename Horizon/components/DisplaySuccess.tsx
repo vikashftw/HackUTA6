@@ -3,10 +3,11 @@ import {
   View,
   Text,
   StyleSheet,
-  Button,
+  TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
 import axios from "axios";
+import { MaterialIcons } from "@expo/vector-icons";
 
 interface DisplaySuccessProps {
   onClose: () => void;
@@ -23,6 +24,7 @@ const DisplaySuccess: React.FC<DisplaySuccessProps> = ({
 }) => {
   const [travelTime, setTravelTime] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [arrivalTime, setArrivalTime] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchTravelTime = async () => {
@@ -41,14 +43,19 @@ const DisplaySuccess: React.FC<DisplaySuccessProps> = ({
           );
 
           if (response.data.routes.length > 0) {
-            const duration = response.data.routes[0].legs[0].duration.text;
-            setTravelTime(duration);
+            const durationInSeconds =
+              response.data.routes[0].legs[0].duration.value;
+            const durationInMinutes = Math.ceil(durationInSeconds / 60);
+            setTravelTime(durationInMinutes.toString());
+            calculateArrivalTime(durationInSeconds);
           } else {
-            setTravelTime("No route found");
+            setTravelTime("15");
+            calculateArrivalTime(15 * 60);
           }
         } catch (error) {
           console.error("Error fetching travel time:", error);
-          setTravelTime("Error fetching travel time");
+          setTravelTime("15");
+          calculateArrivalTime(15 * 60);
         } finally {
           setLoading(false);
         }
@@ -61,19 +68,41 @@ const DisplaySuccess: React.FC<DisplaySuccessProps> = ({
     fetchTravelTime();
   }, [ems_name, latitude, longitude]);
 
+  // Calculate the estimated arrival time
+  const calculateArrivalTime = (durationInSeconds: number) => {
+    const now = new Date();
+    const arrivalDate = new Date(now.getTime() + durationInSeconds * 1000);
+    const options: Intl.DateTimeFormatOptions = {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    };
+    setArrivalTime(arrivalDate.toLocaleTimeString(undefined, options));
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Travel Time to {ems_name}</Text>
+      <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+        <MaterialIcons name="close" size={24} color="black" />
+      </TouchableOpacity>
+      <Text style={styles.title}>Help is on the way from {ems_name}</Text>
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />
       ) : (
-        <Text style={styles.travelTime}>
-          {travelTime ? `Estimated travel time: ${travelTime}` : "No data"}
+        <>
+          <Text style={styles.travelTime}>
+            {travelTime
+              ? `Estimated time of arrival: ${travelTime} minutes`
+              : "No data"}
+          </Text>
+        </>
+      )}
+      {arrivalTime && (
+        <Text style={styles.arrivalTime}>
+          Local time of arrival: {arrivalTime}
         </Text>
       )}
-      <View style={styles.closeButtonContainer}>
-        <Button title="Close" onPress={onClose} />
-      </View>
     </View>
   );
 };
@@ -84,7 +113,7 @@ const styles = StyleSheet.create({
     bottom: 80,
     left: 0,
     right: 0,
-    height: 300, // You can adjust the height as necessary
+    height: 300,
     backgroundColor: "white",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -98,6 +127,12 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
+  closeButton: {
+    position: "absolute",
+    top: 20,
+    right: 20,
+    zIndex: 1,
+  },
   title: {
     fontSize: 20,
     fontWeight: "bold",
@@ -109,12 +144,15 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginVertical: 10,
   },
+  arrivalTime: {
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginVertical: 10,
+  },
   loader: {
     flex: 1,
     justifyContent: "center",
-  },
-  closeButtonContainer: {
-    marginTop: 20,
   },
 });
 
