@@ -65,7 +65,7 @@ const DisplayShelters: React.FC<DisplaySheltersProps> = ({ onClose }) => {
 
       setShelters(sheltersData.slice(0, 15));
     } catch (error) {
-      console.error("Error fetching hospitals:", error);
+      console.error("Error fetching shelters:", error);
     } finally {
       setLoading(false);
     }
@@ -86,7 +86,7 @@ const DisplayShelters: React.FC<DisplaySheltersProps> = ({ onClose }) => {
         <Text style={styles.closeText}>✖</Text>
       </TouchableOpacity>
 
-      <Text style={styles.title}>Nearby Hospitals</Text>
+      <Text style={styles.title}>Nearby Shelters</Text>
 
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />
@@ -104,10 +104,10 @@ const DisplayShelters: React.FC<DisplaySheltersProps> = ({ onClose }) => {
           style={styles.flatList}
         />
       ) : (
-        <Text>No hospitals found</Text>
+        <Text>No shelters found</Text>
       )}
 
-      <Text style={styles.count}>Hospitals count: {shelters.length}</Text>
+      <Text style={styles.count}>Shelters count: {shelters.length}</Text>
     </View>
   );
 };
