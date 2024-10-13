@@ -1,29 +1,40 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { FontAwesome, Ionicons, MaterialIcons } from "@expo/vector-icons";
+import DisplayHospitals from "./DisplayHospitals";
 
 interface DisplayListProps {
   onClose: () => void;
 }
 
 const DisplayList: React.FC<DisplayListProps> = ({ onClose }) => {
+  const [isDisplayHospital, setDisplayHospital] = useState(false);
+
   return (
     <View style={styles.listContainer}>
-      <TouchableOpacity style={styles.iconButton}>
+      <TouchableOpacity
+        id="hospital"
+        style={styles.iconButton}
+        onPress={() => setDisplayHospital(true)}
+      >
         <FontAwesome name="hospital-o" size={30} color="white" />
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.iconButton}>
+      <TouchableOpacity id="shelter" style={styles.iconButton}>
         <Ionicons name="home-outline" size={30} color="white" />
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.iconButton}>
+      <TouchableOpacity id="police" style={styles.iconButton}>
         <FontAwesome name="user-secret" size={30} color="white" />
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.closeButton} onPress={onClose}>
         <MaterialIcons name="close" size={30} color="white" />
       </TouchableOpacity>
+
+      {isDisplayHospital && (
+        <DisplayHospitals onClose={() => setDisplayHospital(false)} />
+      )}
     </View>
   );
 };
@@ -33,7 +44,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
-    padding: 10,
+    padding: 15,
     backgroundColor: "#3b5998",
     position: "absolute",
     bottom: 80,

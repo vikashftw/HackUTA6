@@ -1,0 +1,130 @@
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
+import axios from "axios";
+import * as Location from "expo-location";
+
+interface Hospital {
+  id: number;
+  name: string;
+  distance: number;
+}
+
+interface DisplayHospitalsProps {
+  onClose: () => void;
+}
+
+const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
+  const [hospitals, setHospitals] = useState<Hospital[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [userLocation, setUserLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
+
+  useEffect(() => {
+    // Get user location and fetch hospitals
+    const getUserLocationAndFetchHospitals = async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status === "granted") {
+        let location = await Location.getCurrentPositionAsync({});
+        setUserLocation({
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        });
+      }
+    };
+
+    getUserLocationAndFetchHospitals();
+  }, []);
+
+  useEffect(() => {
+    if (userLocation) {
+      fetchHospitals(userLocation.latitude, userLocation.longitude);
+    }
+  }, [userLocation]);
+
+  const fetchHospitals = async (latitude: number, longitude: number) => {
+    try {
+      const response = await axios.get(
+        "http://100.83.200.110:3000/api/locations/nearby",
+        {
+          params: { latitude, longitude, radius: 250000 },
+        }
+      );
+
+      const hospitalsData = response.data.filter(
+        (location: any) => location.type === "hospital"
+      );
+      setHospitals(hospitalsData);
+    } catch (error) {
+      console.error("Error fetching hospitals:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const renderItem = ({ item }: { item: Hospital }) => (
+    <View style={styles.item}>
+      <Text style={styles.name}>{item.name}</Text>
+      <Text style={styles.distance}>{item.distance} km</Text>
+    </View>
+  );
+
+  return (
+    <View style={styles.container}>
+      <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+        <Text style={styles.closeText}>Close</Text>
+      </TouchableOpacity>
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <FlatList
+          data={hospitals}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id.toString()}
+        />
+      )}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: "white",
+  },
+  closeButton: {
+    padding: 10,
+    backgroundColor: "#3b5998",
+    borderRadius: 5,
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  closeText: {
+    color: "white",
+  },
+  item: {
+    marginVertical: 8,
+    padding: 15,
+    backgroundColor: "#f9f9f9",
+    borderRadius: 5,
+  },
+  name: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  distance: {
+    fontSize: 14,
+    color: "#666",
+  },
+});
+
+export default DisplayHospitals;
