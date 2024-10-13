@@ -1,16 +1,15 @@
 // EmergencyButton.tsx
 import React from "react";
-import { View, Text, TouchableOpacity, Linking, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
-export default function EmergencyButton() {
-  // Function to handle the emergency call
-  const handleEmergencyCall = () => {
-    Linking.openURL("tel:911");
-  };
+interface EmergencyButtonProps {
+  onEmergencyCall: () => void;
+}
 
+export default function EmergencyButton({ onEmergencyCall }: EmergencyButtonProps) {
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.emergencyButton} onPress={handleEmergencyCall}>
+      <TouchableOpacity style={styles.emergencyButton} onPress={onEmergencyCall}>
         <Text style={styles.buttonText}>Emergency Call</Text>
       </TouchableOpacity>
     </View>

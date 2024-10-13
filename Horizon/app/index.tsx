@@ -1,16 +1,27 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, ActivityIndicator, Alert } from "react-native";
+import { StyleSheet, View, ActivityIndicator, Alert } from "react-native";
 import * as Location from "expo-location";
 import axios from "axios";
-import MapView, { Marker } from 'react-native-maps'; // For displaying disasters on a map
-import EmergencyButton from "@/components/EmergencyCall"; // Adjust the import path as needed
+import MapView, { Marker } from 'react-native-maps'; 
+import EmergencyButton from "@/components/EmergencyCall";
 
 interface NearbyLocation {
-  id: number;
+  id?: string;
+  osmId?: string;
   type: string;
   name: string;
   lat: number;
   lon: number;
+}
+
+interface Client {
+  _id: string;
+  name: string;
+  location: {
+    coordinates: [number, number];
+  };
+  capacity: number;
+  specialties: string[];
 }
 
 // Define the types for better TypeScript support
@@ -41,6 +52,7 @@ export default function Index() {
   const [loading, setLoading] = useState(true); // Start with loading set to true
   const [region, setRegion] = useState<Region | null>(null); // State to handle map region
   const [nearbyLocations, setNearbyLocations] = useState<NearbyLocation[]>([]);
+  const [nearbyClients, setNearbyClients] = useState<Client[]>([]);
 
   useEffect(() => {
     getLocation();
@@ -72,6 +84,7 @@ export default function Index() {
       });
       if (userLocation) {
         fetchNearbyLocations(userLocation.coords.latitude, userLocation.coords.longitude);
+        fetchNearbyClients(userLocation.coords.latitude, userLocation.coords.longitude);
       }
       // Fetch disaster data based on location
       fetchDisasterData(userLocation.coords.latitude, userLocation.coords.longitude);
@@ -100,9 +113,21 @@ export default function Index() {
     }
   };
 
+  const fetchNearbyClients = async (latitude: number, longitude: number) => {
+    try {
+      const response = await axios.get("http://100.83.200.110:3000/api/clients/nearby", {
+        params: { latitude, longitude, maxDistance: 250000 }
+      });
+      setNearbyClients(response.data);
+    } catch (error) {
+      console.error("Error fetching nearby clients:", error);
+      Alert.alert("Error fetching nearby clients. Please try again later.");
+    }
+  };
+
   const fetchNearbyLocations = async (latitude: number, longitude: number) => {
     try {
-      const response = await axios.get("http://100.83.200.110:3000/api/locations/nearby", {
+      const response = await axios.get<NearbyLocation[]>("http://100.83.200.110:3000/api/locations/nearby", {
         params: { latitude, longitude, radius: 250000 }
       });
       setNearbyLocations(response.data);
@@ -123,6 +148,34 @@ const getMarkerColor = (type: string) => {
       default:
         return 'purple';
     }
+};
+
+const handleEmergencyCall = async () => {
+  if (nearbyClients.length === 0) {
+    Alert.alert("No nearby emergency services found.");
+    return;
+  }
+
+  const closestClient = nearbyClients[0];
+
+  try {
+    // Send alert to the closest client
+    await axios.post("http://100.83.200.110:3000/api/clients/alert", {
+      clientId: closestClient._id,
+      location: {
+        latitude: region?.latitude,
+        longitude: region?.longitude
+      }
+    });
+
+    Alert.alert(
+      "Emergency Alert Sent",
+      `Alert sent to ${closestClient.name}. They will contact you shortly.`
+    );
+  } catch (error) {
+    console.error("Error sending emergency alert:", error);
+    Alert.alert("Failed to send emergency alert. Please try again.");
+  }
 };
 
 return (
@@ -147,9 +200,9 @@ return (
               pinColor="yellow"
             />
           ))}
-          {nearbyLocations.map((location) => (
+          {nearbyLocations.map((location, index) => (
             <Marker
-              key={`location-${location.id}`}
+              key={`location-${location.id || location.osmId || index}`}
               coordinate={{
                 latitude: location.lat,
                 longitude: location.lon,
@@ -162,7 +215,7 @@ return (
         </MapView>
       )
     )}
-    <EmergencyButton />
+    <EmergencyButton onEmergencyCall={handleEmergencyCall}/>
   </View>
 );
 }
