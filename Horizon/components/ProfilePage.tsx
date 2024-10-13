@@ -88,6 +88,9 @@ const styles = StyleSheet.create({
     color: "#fff",
     marginBottom: 30,
     fontWeight: "bold",
+    textShadowColor: "#000", // 3D shadow effect
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 5,
   },
   input: {
     width: "100%",
@@ -98,6 +101,11 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     color: "#fff",
     fontSize: 16,
+    shadowColor: "#000", // Adding depth with shadow
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 10, // Adding depth
   },
   signInButton: {
     width: "100%",
@@ -107,6 +115,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginVertical: 20,
+    transform: [{ scale: 1.05 }], // Scale for 3D effect
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+    elevation: 10,
   },
   buttonText: {
     fontSize: 18,
@@ -124,13 +138,19 @@ const styles = StyleSheet.create({
     color: "#4c669f",
     marginLeft: 5,
     fontWeight: "bold",
+    textShadowColor: "#000",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 3, // 3D effect for the text
   },
   backButton: {
     marginTop: 20,
     padding: 10,
     backgroundColor: "#333",
     borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 8,
   },
 });
-
-export default ProfilePage;
