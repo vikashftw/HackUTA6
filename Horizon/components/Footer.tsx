@@ -1,12 +1,75 @@
 import React, { useState } from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import EmergencyButton from "./EmergencyCall";
 import { LinearGradient } from "expo-linear-gradient";
 import DisplayList from "./DisplayList";
+import axios from "axios";
+
+interface Region {
+  latitude: number;
+  longitude: number;
+  latitudeDelta: number;
+  longitudeDelta: number;
+}
+
+interface Client {
+  _id: string;
+  name: string;
+  location: {
+    coordinates: [number, number];
+  };
+  capacity: number;
+  specialties: string[];
+}
 
 const Footer: React.FC = () => {
   const [isDisplayList, setDisplayList] = useState(false);
+  const [nearbyClients, setNearbyClients] = useState<Client[]>([]);
+  const [region, setRegion] = useState<Region | undefined>(undefined);
+
+  const fetchNearbyClients = async (latitude: number, longitude: number) => {
+    try {
+      const response = await axios.get(
+        "http://100.83.200.110:3000/api/clients/nearby",
+        {
+          params: { latitude, longitude, maxDistance: 250000 },
+        }
+      );
+      setNearbyClients(response.data);
+    } catch (error) {
+      console.error("Error fetching nearby clients:", error);
+      Alert.alert("Error fetching nearby clients. Please try again later.");
+    }
+  };
+
+  const handleEmergencyCall = async () => {
+    if (nearbyClients.length === 0) {
+      Alert.alert("No nearby emergency services found.");
+      return;
+    }
+
+    const closestClient = nearbyClients[0];
+
+    try {
+      // Send alert to the closest client
+      await axios.post("http://100.83.200.110:3000/api/clients/alert", {
+        clientId: closestClient._id,
+        location: {
+          latitude: region?.latitude,
+          longitude: region?.longitude,
+        },
+      });
+
+      Alert.alert(
+        "Emergency Alert Sent",
+        `Alert sent to ${closestClient.name}. They will contact you shortly.`
+      );
+    } catch (error) {
+      console.error("Error sending emergency alert:", error);
+      Alert.alert("Failed to send emergency alert. Please try again.");
+    }
+  };
 
   return (
     <LinearGradient
@@ -22,7 +85,7 @@ const Footer: React.FC = () => {
       </TouchableOpacity>
 
       <View style={styles.emergencyButtonContainer}>
-        <EmergencyButton />
+        <EmergencyButton onEmergencyCall={handleEmergencyCall} />
       </View>
 
       <TouchableOpacity id="profile-icon" style={styles.iconButton}>
