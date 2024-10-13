@@ -2,9 +2,8 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const mongoose = require('mongoose');
-
+const Client = require('./models/client');
 const locationsRoutes = require('./routes/locations');
-const authRoutes = require('./routes/auth');
 const disasterRoutes = require('./routes/disasters');
 const clientRoutes = require('./routes/clients');
 
@@ -15,10 +14,13 @@ app.use(cors());
 app.use(express.json());
 
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('Connected to MongoDB Atlas'))
+  .then(async () => {
+    console.log('Connected to MongoDB Atlas');
+    await Client.init(); // This ensures indexes are created
+    console.log('Client model initialized');
+  })
   .catch(err => console.error('Could not connect to MongoDB Atlas', err));
 
-app.use('/api/auth', authRoutes);
 app.use('/api/disasters', disasterRoutes);
 app.use('/api/clients', clientRoutes);
 app.use('/api/locations', locationsRoutes);

@@ -1,11 +1,12 @@
-import React from 'react';
-import { TouchableOpacity, Text, Linking, StyleSheet } from 'react-native';
+// EmergencyButton.tsx
+import React from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
-const EmergencyButton: React.FC = () => {
-  const handleEmergencyCall = () => {
-    Linking.openURL("tel:911");
-  };
+interface EmergencyButtonProps {
+  onEmergencyCall: () => void;
+}
 
+export default function EmergencyButton({ onEmergencyCall }: EmergencyButtonProps) {
   return (
     <TouchableOpacity style={styles.emergencyButton} onPress={handleEmergencyCall}>
       <Text style={styles.buttonText}>SOS</Text>
@@ -37,5 +38,3 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
   },
 });
-
-export default EmergencyButton;
