@@ -3,10 +3,11 @@ import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import EmergencyButton from "./EmergencyCall";
 import { LinearGradient } from "expo-linear-gradient";
-
-const [isDisplayList, setDisplayList] = useState(false);
+import DisplayList from "./DisplayList";
 
 const Footer: React.FC = () => {
+  const [isDisplayList, setDisplayList] = useState(false);
+
   return (
     <LinearGradient
       colors={["#4c669f", "#3b5998", "#192f6a"]}
@@ -27,6 +28,8 @@ const Footer: React.FC = () => {
       <TouchableOpacity id="profile-icon" style={styles.iconButton}>
         <Ionicons name="person-circle" size={38} color="white" />
       </TouchableOpacity>
+
+      {isDisplayList && <DisplayList onClose={() => setDisplayList(false)} />}
     </LinearGradient>
   );
 };
