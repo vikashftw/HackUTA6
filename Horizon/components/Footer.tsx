@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   View,
@@ -10,12 +9,11 @@ import {
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import EmergencyButton from "./EmergencyCall";
 import { LinearGradient } from "expo-linear-gradient";
-import DisplayProfile from "./DisplayProfile";
+import DisplayProfile from "./DisplayProfile";  // Default import from DisplayProfile.tsx
 import DisplayList from "./DisplayList";
 import axios from "axios";
 import * as Location from "expo-location";
 import DisplaySuccess from "./DisplaySuccess";
-import { BlurView } from 'expo-blur'; // Added for the blur effect
 
 interface FooterProps {
   goToRegister: () => void;
@@ -126,12 +124,12 @@ const Footer: React.FC<FooterProps> = ({ goToRegister }) => {
 
       {/* Display Profile Page over the whole screen */}
       {isDisplayProfile && (
-        <BlurView intensity={80} style={styles.overlayContainer}>
+        <View style={styles.overlayContainer}>
           <DisplayProfile
             setDisplayProfile={setDisplayProfile}
             goToRegister={goToRegister} // Pass the navigation function to go to register
           />
-        </BlurView>
+        </View>
       )}
 
       {/* Display List Page */}
@@ -194,28 +192,6 @@ const styles = StyleSheet.create({
     height: Dimensions.get("window").height,
     zIndex: 2000,
     backgroundColor: "rgba(0, 0, 0, 0.5)", // semi-transparent to enhance the blur
-  },
-  profileScreen: {
-    backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 15,
-    transform: [{ scale: 1.05 }], // Scaling up slightly for 3D effect
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.4,
-    shadowRadius: 15,
-    elevation: 10,
-  },
-  searchScreen: {
-    backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 15,
-    transform: [{ scale: 1.05 }],
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.4,
-    shadowRadius: 15,
-    elevation: 10,
   },
 });
 
