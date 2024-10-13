@@ -1,19 +1,41 @@
 const axios = require('axios');
+const xml2js = require('xml2js');
 
 async function fetchNearbyDisasters(latitude, longitude, radius) {
     try {
-        const EONETdata = await fetchEONETData();
+        const [EONETdata, GDACSdata] = await Promise.all([
+            fetchEONETData(),
+            fetchGDACSData()
+        ]);
+
+        
         console.log('Raw EONET data:', JSON.stringify(EONETdata, null, 2));
-        const processedData = processEONETData(EONETdata);
-        console.log('Processed data:', JSON.stringify(processedData, null, 2));
-        if (processedData.length === 0) {
+        console.log('Raw GDACS data:', JSON.stringify(GDACSdata, null, 2));
+
+
+        const processedEONETData = processEONETData(EONETdata);
+        const processedGDACSData = processGDACSData(GDACSdata);
+
+        const allProcessedData = [...processedEONETData, ...processedGDACSData];
+        console.log('All processed data:', JSON.stringify(allProcessedData, null, 2));
+
+
+        if (allProcessedData.length === 0) {
             console.log('No events found in the processed data.');
             return [];
         }
+
+        const deduplicatedData = removeDuplicates(allProcessedData);
+        console.log('Deduplicated data:', JSON.stringify(deduplicatedData, null, 2));
+
         const boundingBox = calculateBoundingBox(latitude, longitude, radius);
         console.log('Bounding box:', boundingBox);
-        const filteredEvents = filterNearbyEvents(processedData, latitude, longitude, radius, boundingBox);
+
+
+        const filteredEvents = filterNearbyEvents(deduplicatedData, latitude, longitude, radius, boundingBox);
         console.log('Filtered events:', JSON.stringify(filteredEvents, null, 2));
+
+
         return filteredEvents;
     } catch (error) {
         console.error('Error in fetchNearbyDisasters:', error);
@@ -127,12 +149,75 @@ function combineSimilarEvents(events, distanceThreshold = 10) {
     return combinedEvents;
 }
 
+async function fetchGDACSData() {
+    try {
+        const response = await axios.get('https://www.gdacs.org/xml/rss.xml');
+        const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true });
+        const result = await parser.parseStringPromise(response.data);
+        const items = result.rss.channel.item;
+        return Array.isArray(items) ? items : [items]; // Ensure we always return an array
+    } catch (error) {
+        console.error('Error fetching GDACS data:', error);
+        throw error;
+    }
+}
+
+function processGDACSData(data) {
+    const twoDaysAgo = new Date();
+    twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+
+    return data
+        .filter(item => new Date(item.pubDate) >= twoDaysAgo)
+        .map(item => {
+            let lat = null;
+            let lon = null;
+
+            // Check different possible structures for coordinates
+            if (item['geo:Point'] && item['geo:Point']['geo:lat'] && item['geo:Point']['geo:long']) {
+                lat = parseFloat(item['geo:Point']['geo:lat']);
+                lon = parseFloat(item['geo:Point']['geo:long']);
+            } else if (item['georss:point']) {
+                const [latStr, lonStr] = item['georss:point'].split(' ');
+                lat = parseFloat(latStr);
+                lon = parseFloat(lonStr);
+            }
+
+            return {
+                id: item.guid ? (item.guid._ || item.guid) : null,
+                title: item.title,
+                type: item['dc:subject'] || 'Unknown',
+                coordinates: [lon, lat], // GeoJSON format
+                date: new Date(item.pubDate),
+                link: item.link,
+                description: item.description,
+                alertLevel: item['gdacs:alertlevel'] || null,
+                country: item['gdacs:country'] || null
+            };
+        })
+        .filter(event => event.coordinates[0] !== null && event.coordinates[1] !== null);
+}
+
+
+function removeDuplicates(events) {
+    const uniqueEvents = {};
+    events.forEach(event => {
+        const key = `${event.type}-${Math.round(event.coordinates[1] * 100) / 100}-${Math.round(event.coordinates[0] * 100) / 100}`;
+        if (!uniqueEvents[key] || event.date > uniqueEvents[key].date) {
+            uniqueEvents[key] = event;
+        }
+    });
+    return Object.values(uniqueEvents);
+}
+
+
 module.exports = {
     fetchNearbyDisasters,
     fetchEONETData,
+    fetchGDACSData,
     processEONETData,
+    processGDACSData,
     calculateBoundingBox,
     filterNearbyEvents,
     calculateDistance,
-    combineSimilarEvents
+    removeDuplicates
 };

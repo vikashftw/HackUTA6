@@ -66,7 +66,7 @@ export default function Index() {
       const response = await axios.post("http://100.83.200.110:3000/api/disasters/nearby-disasters", {
         latitude,
         longitude,
-        radius: 2500,
+        radius: 50000,
       });
       setDisasters(response.data || []);
     } catch (error) {

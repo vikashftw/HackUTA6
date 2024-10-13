@@ -5,7 +5,7 @@ const auth = require('../middleware/auth');
 const router = express.Router();
 
 router.post('/nearby-disasters', async (req, res) => {
-    const { latitude, longitude, radius = 20000 } = req.body;
+    const { latitude, longitude, radius = 50000 } = req.body;
 
     try {
         const disasters = await fetchNearbyDisasters(latitude, longitude, radius);
