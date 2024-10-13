@@ -6,6 +6,7 @@ import MapView, { Marker } from "react-native-maps";
 import Footer from "@/components/Footer";
 import ProfilePage from "@/components/ProfilePage";
 import RegisterPage from "@/components/RegisterPage";
+import { UserProvider } from "@/components/UserContext";
 
 // Interfaces for data structures
 interface NearbyLocation {
@@ -200,7 +201,11 @@ const Index: React.FC = () => {
     );
   };
 
-  return renderPage();
+  return (
+    <UserProvider>
+      {renderPage()}
+    </UserProvider>
+  );
 };
 
 const styles = StyleSheet.create({

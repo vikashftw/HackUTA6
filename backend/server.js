@@ -6,11 +6,16 @@ const Client = require('./models/client');
 const locationsRoutes = require('./routes/locations');
 const disasterRoutes = require('./routes/disasters');
 const clientRoutes = require('./routes/clients');
+const authRoutes = require('./routes/auth')
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+app.use(cors({
+  origin: '*', // Be more specific in production
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 
 mongoose.connect(process.env.MONGO_URI)
@@ -24,7 +29,13 @@ mongoose.connect(process.env.MONGO_URI)
 app.use('/api/disasters', disasterRoutes);
 app.use('/api/clients', clientRoutes);
 app.use('/api/locations', locationsRoutes);
+app.use('/api/auth', authRoutes);
+app.use((req, res, next) => {
+  console.log(`Unhandled route: ${req.method} ${req.path}`);
+  res.status(404).json({ message: 'Route not found' });
+});
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on PORT ${PORT}`);
 });
+

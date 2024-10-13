@@ -1,63 +1,96 @@
-import React from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import React, { useState } from "react";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-
-interface ProfilePageProps {
-  goToRegister: () => void;
-  goBackToMap: () => void;
-}
+import axios from 'axios';
+import { useUser } from './UserContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ProfilePage: React.FC<ProfilePageProps> = ({ goToRegister, goBackToMap }) => {
-  const [username, setUsername] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const { setUser } = useUser();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSignIn = () => {
-    Alert.alert("Signed In", `Welcome back, ${username}!`);
-    goBackToMap();
+  const handleSignIn = async () => {
+    if (!username.trim() || !password.trim()) {
+      Alert.alert("Error", "Please enter both username and password.");
+      return;
+    }
+  
+    try {
+      setIsLoading(true);
+      const response = await axios.post('http://100.83.200.110:3000/api/auth/login', {
+        username: username.trim(),
+        password: password.trim()
+      });
+
+      if (response.data && response.data.token) {
+        await AsyncStorage.setItem('user', JSON.stringify(response.data.user));
+        await AsyncStorage.setItem('token', response.data.token);
+        setUser(response.data.user);
+        console.log('User logged in:', response.data.user);
+        Alert.alert("Signed In", `Welcome back, ${username}!`, [
+          { text: "OK", onPress: () => goBackToMap() }
+        ]);
+      } else {
+        Alert.alert('Login Failed', 'Invalid response from server');
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        Alert.alert('Login Failed', error.response.data.message || 'Invalid credentials');
+      } else {
+        Alert.alert('Login Failed', 'An unexpected error occurred');
+      }
+      console.error('Login error:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  return (
-    <LinearGradient colors={["#0f2027", "#203a43", "#2c5364"]} style={styles.gradient}>
-      <View style={styles.container}>
-        {/* Ensure all text is inside a <Text> component */}
-        <Text style={styles.title}>Sign In</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Username"
-          placeholderTextColor="#aaa"
-          value={username}
-          onChangeText={setUsername}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          placeholderTextColor="#aaa"
-          secureTextEntry={true}
-          value={password}
-          onChangeText={setPassword}
-        />
-        
-        {/* Sign In Button */}
+
+return (
+  <LinearGradient colors={["#0f2027", "#203a43", "#2c5364"]} style={styles.gradient}>
+    <View style={styles.container}>
+      <Text style={styles.title}>Sign In</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Username"
+        placeholderTextColor="#aaa"
+        value={username}
+        onChangeText={setUsername}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Password"
+        placeholderTextColor="#aaa"
+        secureTextEntry={true}
+        value={password}
+        onChangeText={setPassword}
+      />
+      
+      {isLoading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
         <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
-          {/* Text must be wrapped inside <Text> */}
           <Text style={styles.buttonText}>Sign In</Text>
         </TouchableOpacity>
+      )}
 
-        {/* Register Section */}
-        <View style={styles.registerSection}>
-          <Text style={styles.registerText}>Don't have an account?</Text>
-          <TouchableOpacity onPress={goToRegister}>
-            <Text style={styles.registerLink}>Register Now</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Go Back Button */}
-        <TouchableOpacity style={styles.backButton} onPress={goBackToMap}>
-          <Text style={styles.buttonText}>Go Back</Text>
+      {/* Register Section */}
+      <View style={styles.registerSection}>
+        <Text style={styles.registerText}>Don't have an account?</Text>
+        <TouchableOpacity onPress={goToRegister}>
+          <Text style={styles.registerLink}>Register Now</Text>
         </TouchableOpacity>
       </View>
-    </LinearGradient>
-  );
+
+      {/* Go Back Button */}
+      <TouchableOpacity style={styles.backButton} onPress={goBackToMap}>
+        <Text style={styles.buttonText}>Go Back</Text>
+      </TouchableOpacity>
+    </View>
+  </LinearGradient>
+);
 };
 
 const styles = StyleSheet.create({
