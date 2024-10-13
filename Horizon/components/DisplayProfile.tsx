@@ -112,4 +112,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DisplayProfile;
+export default DisplayProfile; // Ensure this is a default export

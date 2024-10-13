@@ -11,18 +11,18 @@ import {
 import axios from "axios";
 import * as Location from "expo-location";
 
-interface Hospital {
+interface Shelter {
   id: string;
   name: string | null;
   distance: number | null;
 }
 
-interface DisplayHospitalsProps {
+interface DisplaySheltersProps {
   onClose: () => void;
 }
 
-const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
-  const [hospitals, setHospitals] = useState<Hospital[]>([]);
+const DisplayShelters: React.FC<DisplaySheltersProps> = ({ onClose }) => {
+  const [shelters, setShelters] = useState<Shelter[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [userLocation, setUserLocation] = useState<{
     latitude: number;
@@ -30,7 +30,7 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
   } | null>(null);
 
   useEffect(() => {
-    const getUserLocationAndFetchHospitals = async () => {
+    const getUserLocationAndFetchShelters = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status === "granted") {
         let location = await Location.getCurrentPositionAsync({});
@@ -41,16 +41,16 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
       }
     };
 
-    getUserLocationAndFetchHospitals();
+    getUserLocationAndFetchShelters();
   }, []);
 
   useEffect(() => {
     if (userLocation) {
-      fetchHospitals(userLocation.latitude, userLocation.longitude);
+      fetchShelters(userLocation.latitude, userLocation.longitude);
     }
   }, [userLocation]);
 
-  const fetchHospitals = async (latitude: number, longitude: number) => {
+  const fetchShelters = async (latitude: number, longitude: number) => {
     try {
       const response = await axios.get(
         "http://100.83.200.110:3000/api/locations/nearby",
@@ -59,19 +59,19 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
         }
       );
 
-      const hospitalsData = response.data.filter(
-        (location: any) => location.type === "hospital"
+      const sheltersData = response.data.filter(
+        (location: any) => location.type === "shelter"
       );
 
-      setHospitals(hospitalsData.slice(0, 15));
+      setShelters(sheltersData.slice(0, 15));
     } catch (error) {
-      console.error("Error fetching hospitals:", error);
+      console.error("Error fetching shelters:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const renderItem = ({ item }: { item: Hospital }) => (
+  const renderItem = ({ item }: { item: Shelter }) => (
     <View style={styles.item}>
       <Text style={styles.name}>{item.name ? item.name : "EMS"}</Text>
       <Text style={styles.distance}>
@@ -86,13 +86,13 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
         <Text style={styles.closeText}>✖</Text>
       </TouchableOpacity>
 
-      <Text style={styles.title}>Nearby Hospitals</Text>
+      <Text style={styles.title}>Nearby Shelters</Text>
 
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />
-      ) : hospitals.length > 0 ? (
+      ) : shelters.length > 0 ? (
         <FlatList
-          data={hospitals}
+          data={shelters}
           renderItem={renderItem}
           keyExtractor={(item) =>
             item.id !== undefined
@@ -104,23 +104,23 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
           style={styles.flatList}
         />
       ) : (
-        <Text>No hospitals found</Text>
+        <Text>No shelters found</Text>
       )}
 
-      <Text style={styles.count}>Hospitals count: {hospitals.length}</Text>
+      <Text style={styles.count}>Shelters count: {shelters.length}</Text>
     </View>
   );
 };
 
-const { height } = Dimensions.get('window');
+const { height } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    bottom: 80, // Adjust this value based on your footer height
+    position: "absolute",
+    bottom: 80,
     left: 0,
     right: 0,
-    height: height / 2, // Takes half the screen height
+    height: height / 2,
     backgroundColor: "white",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -147,13 +147,13 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 10,
-    textAlign: 'center',
+    textAlign: "center",
   },
   loader: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   listContainer: {
     paddingHorizontal: 10,
@@ -177,10 +177,10 @@ const styles = StyleSheet.create({
     color: "#666",
   },
   count: {
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 10,
-    color: '#666',
+    color: "#666",
   },
 });
 
-export default DisplayHospitals;
+export default DisplayShelters;

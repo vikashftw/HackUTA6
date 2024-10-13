@@ -9,7 +9,9 @@ import {
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import EmergencyButton from "./EmergencyCall";
 import { LinearGradient } from "expo-linear-gradient";
-import DisplayProfile from "./DisplayProfile"; // Default import from DisplayProfile.tsx
+
+import DisplayProfile from "./DisplayProfile";  // Default import from DisplayProfile.tsx
+
 import DisplayList from "./DisplayList";
 import axios from "axios";
 import * as Location from "expo-location";
