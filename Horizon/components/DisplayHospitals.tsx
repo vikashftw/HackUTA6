@@ -54,7 +54,7 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
       const response = await axios.get(
         "http://100.83.200.110:3000/api/locations/nearby",
         {
-          params: { latitude, longitude, radius: 2500 },
+          params: { latitude, longitude, radius: 25000 },
         }
       );
 
