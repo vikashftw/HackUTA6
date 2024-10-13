@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Dimensions,
-  Alert,
-} from "react-native";
+import { View, StyleSheet, TouchableOpacity, Dimensions, Alert } from "react-native";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import EmergencyButton from "./EmergencyCall";
 import { LinearGradient } from "expo-linear-gradient";
@@ -13,8 +7,8 @@ import DisplayProfile from "./DisplayProfile";
 import DisplayList from "./DisplayList";
 import axios from "axios";
 import * as Location from "expo-location";
-import { useUser } from "./UserContext";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useUser } from './UserContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import DisplaySuccess from "./DisplaySuccess";
 
 interface FooterProps {
@@ -40,9 +34,10 @@ const Footer: React.FC<FooterProps> = ({ goToRegister }) => {
   const [isDisplaySuccess, setDisplaySuccess] = useState(false);
   const [isClientName, setClientName] = useState("");
 
+  
   useEffect(() => {
     const checkUser = async () => {
-      const storedUser = await AsyncStorage.getItem("user");
+      const storedUser = await AsyncStorage.getItem('user');
       if (storedUser) {
         setUser(JSON.parse(storedUser));
       }
@@ -56,46 +51,49 @@ const Footer: React.FC<FooterProps> = ({ goToRegister }) => {
       setDisplayProfile(true);
       return;
     }
-
+  
     try {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         Alert.alert("Permission to access location was denied");
         return;
       }
-
+  
       let location = await Location.getCurrentPositionAsync({});
       const { latitude, longitude } = location.coords;
       setLatitude(latitude);
       setLongitude(longitude);
-
+  
       const response = await axios.get(
         "http://100.83.200.110:3000/api/clients/nearby",
         {
-          params: { latitude, longitude, maxDistance: 500 },
+          params: { latitude, longitude, maxDistance: 250000 },
         }
       );
-
+  
       const nearbyClients = response.data;
       if (nearbyClients.length === 0) {
         Alert.alert("No nearby emergency services found.");
         return;
       }
-
+  
       const closestClient = nearbyClients[0];
-
-      await axios.post("http://100.83.200.110:3000/api/clients/alert", {
-        clientId: closestClient._id,
-        location: {
-          latitude,
-          longitude,
-        },
-        userInfo: {
-          name: user.username,
-          healthInfo: user.healthInfo,
-        },
-      });
-
+  
+      await axios.post(
+        "http://100.83.200.110:3000/api/clients/alert",
+        {
+          clientId: closestClient._id,
+          location: {
+            latitude,
+            longitude,
+          },
+          userInfo: {
+            name: user.username,
+            healthInfo: user.healthInfo
+          }
+        }
+      );
+  
       Alert.alert(
         "Emergency Alert Sent",
         `Alert sent to ${closestClient.name}. They will contact you shortly.`,
@@ -116,6 +114,8 @@ const Footer: React.FC<FooterProps> = ({ goToRegister }) => {
       Alert.alert("Failed to process emergency call. Please try again.");
     }
   };
+  
+  
 
   return (
     <>
@@ -156,55 +156,48 @@ const Footer: React.FC<FooterProps> = ({ goToRegister }) => {
 
       {/* Display List Page */}
       {isDisplayList && <DisplayList onClose={() => setDisplayList(false)} />}
-      {isDisplaySuccess && (
-        <DisplaySuccess
-          onClose={() => setDisplaySuccess(false)}
-          ems_name={isClientName}
-          longitude={longitude}
-          latitude={latitude}
-        />
-      )}
+      {isDisplaySuccess && (<DisplaySuccess onClose={() => setDisplaySuccess(false)} ems_name={isClientName} longitude={longitude} latitude={latitude} />)}
     </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    height: 80,
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    zIndex: 1000,
-    paddingBottom: 20,
-  },
-  iconButton: {
-    padding: 8,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  emergencyButtonContainer: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 20,
-    alignItems: "center",
-    zIndex: 5,
-  },
-  overlayContainer: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    width: Dimensions.get("window").width,
-    height: Dimensions.get("window").height,
-    zIndex: 2000,
-    backgroundColor: "rgba(0, 0, 0, 0.8)",
-  },
-});
-export default Footer;
+    container: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 20,
+      height: 80,
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      zIndex: 1000,
+      paddingBottom: 20,
+    },
+    iconButton: {
+      padding: 8,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    emergencyButtonContainer: {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      bottom: 20,
+      alignItems: 'center',
+      zIndex: 5,
+    },
+    overlayContainer: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      width: Dimensions.get('window').width,
+      height: Dimensions.get('window').height,
+      zIndex: 2000,
+      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    },
+  });
+  export default Footer;

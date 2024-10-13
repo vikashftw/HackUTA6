@@ -86,7 +86,7 @@ async function getNearbyClients(token) {
       params: {
         latitude: 40.7128,
         longitude: -74.0060,
-        maxDistance: 500
+        maxDistance: 5000
       },
       headers: { 'x-auth-token': token }
     });
