@@ -1,51 +1,41 @@
-// EmergencyButton.tsx
-import React from "react";
-import { View, Text, TouchableOpacity, Linking, StyleSheet } from "react-native";
+import React from 'react';
+import { TouchableOpacity, Text, Linking, StyleSheet } from 'react-native';
 
-export default function EmergencyButton() {
-  // Function to handle the emergency call
+const EmergencyButton: React.FC = () => {
   const handleEmergencyCall = () => {
     Linking.openURL("tel:911");
   };
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.emergencyButton} onPress={handleEmergencyCall}>
-        <Text style={styles.buttonText}>Emergency Call</Text>
-      </TouchableOpacity>
-    </View>
+    <TouchableOpacity style={styles.emergencyButton} onPress={handleEmergencyCall}>
+      <Text style={styles.buttonText}>SOS</Text>
+    </TouchableOpacity>
   );
-}
+};
 
-// Styles for the emergency button and container
 const styles = StyleSheet.create({
-  container: {
-    position: "absolute",
-    bottom: 20,
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
   emergencyButton: {
-    width: 250,
-    height: 60,
-    backgroundColor: "#ff4b5c", // A striking red for the button
-    borderRadius: 15, // Curved edges
+    backgroundColor: "#ff4b5c",
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 30,
     justifyContent: "center",
     alignItems: "center",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.46,
-    shadowRadius: 11.14,
-    elevation: 17, // 3D shadow effect
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8,
     borderWidth: 2,
-    borderColor: "#ff858d", // Subtle border
+    borderColor: "#ff858d",
   },
   buttonText: {
     color: "#fff",
     fontWeight: "bold",
-    fontSize: 18,
+    fontSize: 20,
     textAlign: "center",
     textTransform: "uppercase",
   },
 });
+
+export default EmergencyButton;
