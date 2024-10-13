@@ -1,21 +1,25 @@
 import React, { useState } from "react";
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Dimensions,
-  Alert,
-} from "react-native";
+import { View, StyleSheet, TouchableOpacity, Dimensions, Alert } from "react-native";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
-import EmergencyButton from "./EmergencyCall"; // Make sure this component accepts onEmergencyCall prop
+import EmergencyButton from "./EmergencyCall";
 import { LinearGradient } from "expo-linear-gradient";
-import DisplayProfile from "./DisplayProfile"; // Ensure this component is imported correctly
-import DisplayList from "./DisplayList"; // Ensure this component is imported correctly
+import DisplayProfile from "./DisplayProfile";
+import DisplayList from "./DisplayList";
 import axios from "axios";
 import * as Location from "expo-location";
 
 interface FooterProps {
   goToRegister: () => void; // Add this prop to handle registration navigation
+}
+
+interface Client {
+  _id: string;
+  name: string;
+  location: {
+    coordinates: [number, number];
+  };
+  capacity: number;
+  specialties: string[];
 }
 
 const Footer: React.FC<FooterProps> = ({ goToRegister }) => {
@@ -40,7 +44,7 @@ const Footer: React.FC<FooterProps> = ({ goToRegister }) => {
         }
       );
 
-      const nearbyClients = response.data;
+      const nearbyClients: Client[] = response.data;
 
       if (nearbyClients.length === 0) {
         Alert.alert("No nearby emergency services found.");
@@ -104,47 +108,48 @@ const Footer: React.FC<FooterProps> = ({ goToRegister }) => {
         </View>
       )}
 
-      {/* Display List */}
+      {/* Display List Page */}
       {isDisplayList && <DisplayList onClose={() => setDisplayList(false)} />}
     </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    height: 80,
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    zIndex: 1000,
-    alignItems: "center",
-  },
-  iconButton: {
-    padding: 8,
-  },
-  emergencyButtonContainer: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 20,
-    alignItems: "center",
-    zIndex: 1001,
-  },
-  overlayContainer: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    width: Dimensions.get("window").width,
-    height: Dimensions.get("window").height,
-    zIndex: 2000,
-    backgroundColor: "rgba(0, 0, 0, 0.8)",
-  },
-});
-
-export default Footer;
+    container: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 20,
+      height: 80,
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      zIndex: 1000,
+    },
+    iconButton: {
+      padding: 8,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    emergencyButtonContainer: {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      bottom: 20,
+      alignItems: 'center',
+      zIndex: 5,
+    },
+    overlayContainer: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      width: Dimensions.get('window').width,
+      height: Dimensions.get('window').height,
+      zIndex: 2000,
+      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    },
+  });
+  export default Footer;
