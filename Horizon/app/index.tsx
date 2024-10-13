@@ -178,7 +178,7 @@ export default function Index() {
                   longitude: location.lon,
                 }}
                 title={location.name}
-                description={`Type: ${location.type}`}
+                description={`Service: ${getMarkerType(location.type)}`}
                 pinColor={getMarkerColor(location.type)}
               />
             ))}
