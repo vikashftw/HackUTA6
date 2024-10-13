@@ -11,7 +11,7 @@ import axios from "axios";
 import * as Location from "expo-location";
 
 interface Hospital {
-  id: number;
+  id: string;
   name: string | null;
   distance: number | null;
 }
