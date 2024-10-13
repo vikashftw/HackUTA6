@@ -104,18 +104,23 @@ const DisplayHospitals: React.FC<DisplayHospitalsProps> = ({ onClose }) => {
         <Text>No hospitals found</Text>
       )}
 
-      <Text>Debug: Hospitals count: {hospitals.length}</Text>
-      <Text>Debug: Loading state: {loading ? "true" : "false"}</Text>
+      <Text>Hospitals count: {hospitals.length}</Text>
+      <Text>{loading ? "Loading" : "Error in Loading"}</Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    position: "absolute", // Centering the content outside flexbox
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: "center", // Centers vertically
+    alignItems: "center", // Centers horizontally
     padding: 20,
     backgroundColor: "white",
-    justifyContent: "center", // Center content when loading
   },
   closeButton: {
     position: "absolute",
@@ -123,7 +128,7 @@ const styles = StyleSheet.create({
     right: 20,
     padding: 10,
     backgroundColor: "transparent",
-    zIndex: 1, // Ensures the close button appears above other content
+    zIndex: 1,
   },
   closeText: {
     fontSize: 24,
@@ -134,10 +139,12 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingBottom: 20,
-    alignItems: "stretch", // Changed from 'center' to stretch the list items
+    alignItems: "stretch",
   },
   flatList: {
-    flexGrow: 1, // Ensures the FlatList doesn't shrink when content is small
+    flexGrow: 1,
+    width: "100%",
+    maxWidth: 400,
   },
   item: {
     marginVertical: 8,
@@ -145,7 +152,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f9f9f9",
     borderRadius: 5,
     width: "100%",
-    maxWidth: "100%", // Use dynamic width rather than fixed 400px
+    maxWidth: "100%",
   },
   name: {
     fontSize: 16,
