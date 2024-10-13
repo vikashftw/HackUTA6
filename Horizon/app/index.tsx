@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, ActivityIndicator, Alert } from "react-native";
 import * as Location from "expo-location";
 import axios from "axios";
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps'; // For displaying disasters on a map
+import EmergencyButton from "@/components/EmergencyCall"; // Adjust the import path as needed
 
+// Define the types for better TypeScript support
 interface LocationObject {
   coords: {
     latitude: number;
@@ -28,30 +30,39 @@ interface Region {
 export default function Index() {
   const [location, setLocation] = useState<LocationObject | null>(null);
   const [disasters, setDisasters] = useState<Disaster[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [region, setRegion] = useState<Region | null>(null);
+  const [loading, setLoading] = useState(true); // Start with loading set to true
+  const [region, setRegion] = useState<Region | null>(null); // State to handle map region
 
   useEffect(() => {
     getLocation();
   }, []);
 
+  // Function to get user's location
   const getLocation = async () => {
     setLoading(true);
+
     try {
+      // Ask for location permission
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         Alert.alert("Permission to access location was denied");
+        setLoading(false);
         return;
       }
 
+      // Get user's location
       let userLocation = await Location.getCurrentPositionAsync({});
       setLocation(userLocation);
+
+      // Set region for MapView
       setRegion({
         latitude: userLocation.coords.latitude,
         longitude: userLocation.coords.longitude,
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
       });
+
+      // Fetch disaster data based on location
       fetchDisasterData(userLocation.coords.latitude, userLocation.coords.longitude);
     } catch (error) {
       console.error("Error getting location:", error);
@@ -61,12 +72,14 @@ export default function Index() {
     }
   };
 
+  // Function to fetch disaster data from the backend
   const fetchDisasterData = async (latitude: number, longitude: number) => {
     try {
+      // Replace this with your actual backend URL
       const response = await axios.post("http://100.83.200.110:3000/api/disasters/nearby-disasters", {
         latitude,
         longitude,
-        radius: 50000,
+        radius: 50000, // Optional radius in km
       });
       setDisasters(response.data || []);
     } catch (error) {
@@ -77,9 +90,9 @@ export default function Index() {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.container}>
       {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#fff" />
       ) : (
           region && (
             <MapView
@@ -100,6 +113,8 @@ export default function Index() {
             </MapView>
           )
       )}
+      {/* Add the Emergency Button */}
+      <EmergencyButton />
     </View>
   );
 }
