@@ -60,7 +60,7 @@ const DisplayBloodBanks: React.FC<DisplayBloodBanksProps> = ({ onClose }) => {
       );
 
       const bloodBanksData = response.data.filter(
-        (location: any) => location.type === "bloodbank"
+        (location: any) => location.type === "blood_donation"
       );
 
       setBloodBanks(bloodBanksData.slice(0, 15));
