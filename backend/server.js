@@ -21,6 +21,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/disasters', disasterRoutes);
 app.use('/api/clients', clientRoutes);
 
-app.listen(PORT, () => {
-    console.log(`Server running on PORT ${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on PORT ${PORT}`);
 });
