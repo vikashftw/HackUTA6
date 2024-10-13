@@ -158,6 +158,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 1000,
+    paddingBottom: 20,
   },
   iconButton: {
     padding: 8,
