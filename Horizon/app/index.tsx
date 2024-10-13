@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  StyleSheet,
-  View,
-  ActivityIndicator,
-  Alert,
-  Dimensions,
-} from "react-native";
+import { StyleSheet, View, Text, ActivityIndicator, Alert, Dimensions } from "react-native";
 import * as Location from "expo-location";
 import axios from "axios";
 import MapView, { Marker } from "react-native-maps";
@@ -50,9 +44,7 @@ const Index: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [region, setRegion] = useState<Region | undefined>(undefined);
   const [nearbyLocations, setNearbyLocations] = useState<NearbyLocation[]>([]);
-  const [currentPage, setCurrentPage] = useState<
-    "map" | "profile" | "register"
-  >("map");
+  const [currentPage, setCurrentPage] = useState<"map" | "profile" | "register">("map");
 
   useEffect(() => {
     getLocation();
@@ -79,14 +71,8 @@ const Index: React.FC = () => {
       };
 
       setRegion(regionData);
-      fetchNearbyLocations(
-        userLocation.coords.latitude,
-        userLocation.coords.longitude
-      );
-      fetchDisasterData(
-        userLocation.coords.latitude,
-        userLocation.coords.longitude
-      );
+      fetchNearbyLocations(userLocation.coords.latitude, userLocation.coords.longitude);
+      fetchDisasterData(userLocation.coords.latitude, userLocation.coords.longitude);
     } catch (error) {
       console.error("Error getting location:", error);
       Alert.alert("Error getting location. Please try again later.");
@@ -102,7 +88,7 @@ const Index: React.FC = () => {
         {
           latitude,
           longitude,
-          radius: 50000,
+          radius: 50000, 
         }
       );
       setDisasters(response.data || []);
@@ -154,43 +140,43 @@ const Index: React.FC = () => {
   };
 
   const renderPage = () => {
-    if (loading) {
-      return <ActivityIndicator size="large" color="#0000ff" />;
-    }
-
     return (
       <>
         {currentPage === "map" && (
           <View style={styles.mapContainer}>
-            {region && (
-              <MapView style={styles.map} region={region}>
-                {disasters.map((disaster, index) => (
-                  <Marker
-                    key={`disaster-${index}`}
-                    coordinate={{
-                      latitude: disaster.coordinates[1],
-                      longitude: disaster.coordinates[0],
-                    }}
-                    title={disaster.title}
-                    description={`Type: ${disaster.type}, Date: ${new Date(
-                      disaster.date
-                    ).toLocaleString()}`}
-                    pinColor="yellow"
-                  />
-                ))}
-                {nearbyLocations.map((location) => (
-                  <Marker
-                    key={`location-${location.id || location.osmId}`}
-                    coordinate={{
-                      latitude: location.lat,
-                      longitude: location.lon,
-                    }}
-                    title={location.name}
-                    description={`Service: ${getMarkerType(location.type)}`}
-                    pinColor={getMarkerColor(location.type)}
-                  />
-                ))}
-              </MapView>
+            {loading ? (
+              <ActivityIndicator size="large" color="#0000ff" />
+            ) : (
+              region && (
+                <MapView style={styles.map} region={region}>
+                  {disasters.map((disaster, index) => (
+                    <Marker
+                      key={`disaster-${index}`}
+                      coordinate={{
+                        latitude: disaster.coordinates[1],
+                        longitude: disaster.coordinates[0],
+                      }}
+                      title={disaster.title}
+                      description={`Type: ${disaster.type}, Date: ${new Date(
+                        disaster.date
+                      ).toLocaleString()}`}
+                      pinColor="yellow"
+                    />
+                  ))}
+                  {nearbyLocations.map((location, index) => (
+                    <Marker
+                      key={`location-${location.id || location.osmId || index}`}
+                      coordinate={{
+                        latitude: location.lat,
+                        longitude: location.lon,
+                      }}
+                      title={location.name}
+                      description={`Service: ${getMarkerType(location.type)}`}
+                      pinColor={getMarkerColor(location.type)}
+                    />
+                  ))}
+                </MapView>
+              )
             )}
             <Footer goToRegister={() => setCurrentPage("register")} />
           </View>
@@ -214,13 +200,10 @@ const Index: React.FC = () => {
     );
   };
 
-  return <View style={styles.container}>{renderPage()}</View>;
+  return renderPage();
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   mapContainer: {
     flex: 1,
   },

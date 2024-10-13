@@ -24,17 +24,16 @@ export default function EmergencyButton({
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    bottom: 20,
+    bottom: 8,
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
   },
   emergencyButton: {
-    width: 100,
-    paddingVertical: 12,
-    paddingHorizontal: 30,
-    backgroundColor: "#ff4b5c",
-    borderRadius: 20,
+    width: 115,
+    height: 46,
+    backgroundColor: "#ff4b5c", // A striking red for the button
+    borderRadius: 15, // Curved edges
     justifyContent: "center",
     alignItems: "center",
     shadowColor: "#000",
