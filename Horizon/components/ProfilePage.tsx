@@ -174,3 +174,5 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
 });
+
+export default ProfilePage;

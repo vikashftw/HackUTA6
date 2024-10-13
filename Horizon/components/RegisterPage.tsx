@@ -1,5 +1,7 @@
+import React from "react";
+import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, ScrollView, Alert, Text } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from "react-native";
 import axios from 'axios';
 import { useUser } from './UserContext';
 
