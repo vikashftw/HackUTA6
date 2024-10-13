@@ -17,7 +17,7 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 }
 
 router.get('/nearby', async (req, res) => {
-    const { latitude, longitude, radius = 25000 } = req.query;
+    const { latitude, longitude, radius = 2500 } = req.query;
     const radiusInRadians = parseInt(radius) / 6371000;
 
     try {

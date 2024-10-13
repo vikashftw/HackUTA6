@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Text, ActivityIndicator, Alert, Dimensions } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  ActivityIndicator,
+  Alert,
+  Dimensions,
+} from "react-native";
 import * as Location from "expo-location";
 import axios from "axios";
 import MapView, { Marker } from "react-native-maps";
@@ -44,7 +51,9 @@ const Index: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [region, setRegion] = useState<Region | undefined>(undefined);
   const [nearbyLocations, setNearbyLocations] = useState<NearbyLocation[]>([]);
-  const [currentPage, setCurrentPage] = useState<"map" | "profile" | "register">("map");
+  const [currentPage, setCurrentPage] = useState<
+    "map" | "profile" | "register"
+  >("map");
 
   useEffect(() => {
     getLocation();
@@ -71,8 +80,14 @@ const Index: React.FC = () => {
       };
 
       setRegion(regionData);
-      fetchNearbyLocations(userLocation.coords.latitude, userLocation.coords.longitude);
-      fetchDisasterData(userLocation.coords.latitude, userLocation.coords.longitude);
+      fetchNearbyLocations(
+        userLocation.coords.latitude,
+        userLocation.coords.longitude
+      );
+      fetchDisasterData(
+        userLocation.coords.latitude,
+        userLocation.coords.longitude
+      );
     } catch (error) {
       console.error("Error getting location:", error);
       Alert.alert("Error getting location. Please try again later.");
@@ -88,7 +103,7 @@ const Index: React.FC = () => {
         {
           latitude,
           longitude,
-          radius: 50000, 
+          radius: 500,
         }
       );
       setDisasters(response.data || []);
@@ -103,7 +118,7 @@ const Index: React.FC = () => {
       const response = await axios.get(
         "http://100.83.200.110:3000/api/locations/nearby",
         {
-          params: { latitude, longitude, radius: 250000 },
+          params: { latitude, longitude, radius: 2500 },
         }
       );
       setNearbyLocations(response.data);
@@ -200,11 +215,7 @@ const Index: React.FC = () => {
     );
   };
 
-  return (
-    <UserProvider>
-      {renderPage()}
-    </UserProvider>
-  );
+  return <UserProvider>{renderPage()}</UserProvider>;
 };
 
 const styles = StyleSheet.create({

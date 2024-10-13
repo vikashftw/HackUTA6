@@ -55,12 +55,12 @@ const DisplayBloodBanks: React.FC<DisplayBloodBanksProps> = ({ onClose }) => {
       const response = await axios.get(
         "http://100.83.200.110:3000/api/locations/nearby",
         {
-          params: { latitude, longitude, radius: 250000 },
+          params: { latitude, longitude, radius: 1000 },
         }
       );
 
       const bloodBanksData = response.data.filter(
-        (location: any) => location.type === "bloodbank"
+        (location: any) => location.type === "blood_bank"
       );
 
       setBloodBanks(bloodBanksData.slice(0, 15));
