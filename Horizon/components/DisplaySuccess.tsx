@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Button, Alert } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Button,
+  ActivityIndicator,
+} from "react-native";
 import axios from "axios";
 
 interface DisplaySuccessProps {
@@ -22,7 +28,6 @@ const DisplaySuccess: React.FC<DisplaySuccessProps> = ({
     const fetchTravelTime = async () => {
       if (latitude && longitude) {
         try {
-          // Replace with your Google Maps API Key
           const apiKey = "AIzaSyAJ3LGi3rxtn7vYFSJRIDuv8-4Q_s9LkeQ";
           const response = await axios.get(
             `https://maps.googleapis.com/maps/api/directions/json`,
@@ -57,18 +62,60 @@ const DisplaySuccess: React.FC<DisplaySuccessProps> = ({
   }, [ems_name, latitude, longitude]);
 
   return (
-    <View style={{ padding: 20 }}>
-      <Text style={{ fontSize: 20 }}>Travel Time to {ems_name}</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Travel Time to {ems_name}</Text>
       {loading ? (
-        <Text>Loading...</Text>
+        <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />
       ) : (
-        <Text style={{ fontSize: 16 }}>
+        <Text style={styles.travelTime}>
           {travelTime ? `Estimated travel time: ${travelTime}` : "No data"}
         </Text>
       )}
-      <Button title="Close" onPress={onClose} />
+      <View style={styles.closeButtonContainer}>
+        <Button title="Close" onPress={onClose} />
+      </View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    position: "absolute",
+    bottom: 80,
+    left: 0,
+    right: 0,
+    height: 300, // You can adjust the height as necessary
+    backgroundColor: "white",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: -2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  travelTime: {
+    fontSize: 16,
+    textAlign: "center",
+    marginVertical: 10,
+  },
+  loader: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  closeButtonContainer: {
+    marginTop: 20,
+  },
+});
 
 export default DisplaySuccess;
