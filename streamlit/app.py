@@ -1,56 +1,119 @@
 import streamlit as st
-from pymongo.mongo_client import MongoClient
-from pymongo.server_api import ServerApi
+import requests
+import time
+from datetime import datetime
 
-MONGO_URI = "mongodb+srv://GxhNFKK2idTsQRdN:GxhNFKK2idTsQRdN@horizon.cbsjq.mongodb.net/?retryWrites=true&w=majority&appName=Horizon&tlsAllowInvalidCertificates=true"
+# Replace this with your Express server's URL
+API_BASE_URL = "http://localhost:3000/api/clients"  # Adjust if your server is on a different port or host
 
-client = MongoClient(MONGO_URI, server_api=ServerApi('1'))
-db = client.relief_db
-providers_collection = db.providers
+st.title("Horizon: Relief Provider and Client Management")
 
-try:
-    client.admin.command('ping')
-    st.success("Successfully connected to MongoDB!")
-except Exception as e:
-    st.error(f"Error connecting to MongoDB: {e}")
-
-def save_provider(name, contact, services, county):
-    provider_data = {
-        "name": name,
-        "contact": contact,
-        "services": services,
-        "county": county
-    }
-    providers_collection.insert_one(provider_data)
-    st.success(f"Relief provider '{name}' has been added to the database.")
-
-def get_providers():
-    return list(providers_collection.find())
-
-st.title("Horizon: Relief Provider Management and Data Acquisition")
-
-with st.form(key='provider_form'):
-    name = st.text_input("Provider Name")
-    contact = st.text_input("Contact Information")
-    services = st.text_area("Services Provided")
-    county = st.text_input("County")
-    
-    submit_button = st.form_submit_button(label='Add Provider')
-
-if submit_button:
-    if name and contact and services and county:
-        save_provider(name, contact, services, county)
+# Function to get active alerts from the Express API
+def get_active_alerts():
+    response = requests.get(f"{API_BASE_URL}/active-alerts")
+    if response.status_code == 200:
+        return response.json()
     else:
-        st.error("Please fill out all fields.")
+        st.error("Failed to fetch active alerts")
+        return []
 
-st.subheader("All Relief Providers")
-providers = get_providers()
-if providers:
-    for provider in providers:
-        st.write(f"**Name:** {provider['name']}")
-        st.write(f"**Contact:** {provider['contact']}")
-        st.write(f"**Services:** {provider['services']}")
-        st.write(f"**County:** {provider['county']}")
-        st.write("---")
-else:
-    st.write("No relief providers found.")
+# Function to send a new alert
+def send_alert(client_id, location, emergency_type, description):
+    response = requests.post(f"{API_BASE_URL}/alert", json={
+        "clientId": client_id,
+        "location": location,
+        "emergencyType": emergency_type,
+        "description": description
+    })
+    return response.status_code == 200
+
+# Function to resolve an alert
+def resolve_alert(client_id, alert_id):
+    response = requests.post(f"{API_BASE_URL}/resolve-alert", json={
+        "clientId": client_id,
+        "alertId": alert_id
+    })
+    return response.status_code == 200
+
+tab1, tab2, tab3 = st.tabs(["Clients", "Send Alert", "Active Alerts"])
+
+with tab1:
+    st.header("Nearby Clients")
+    latitude = st.number_input("Latitude", value=0.0)
+    longitude = st.number_input("Longitude", value=0.0)
+    max_distance = st.number_input("Max Distance (meters)", value=10000)
+    if st.button("Find Nearby Clients"):
+        response = requests.get(f"{API_BASE_URL}/nearby", params={
+            "latitude": latitude,
+            "longitude": longitude,
+            "maxDistance": max_distance
+        })
+        if response.status_code == 200:
+            clients = response.json()
+            for client in clients:
+                st.write(f"**Name:** {client['name']}")
+                st.write(f"**Location:** {client['location']['coordinates']}")
+                st.write(f"**Capacity:** {client['capacity']}")
+                st.write(f"**Specialties:** {', '.join(client['specialties'])}")
+                st.write("---")
+        else:
+            st.error("Failed to fetch nearby clients")
+
+with tab2:
+    st.header("Send Alert")
+    client_id = st.text_input("Client ID")
+    emergency_type = st.text_input("Emergency Type")
+    description = st.text_area("Description")
+    lat = st.number_input("Latitude", key="alert_lat")
+    lon = st.number_input("Longitude", key="alert_lon")
+    if st.button("Send Alert"):
+        if send_alert(client_id, {"latitude": lat, "longitude": lon}, emergency_type, description):
+            st.success("Alert sent successfully")
+        else:
+            st.error("Failed to send alert")
+
+with tab3:
+    st.header("Active Alerts")
+    
+    alerts_placeholder = st.empty()
+    
+    def display_alerts():
+        active_alerts = get_active_alerts()
+        with alerts_placeholder.container():
+            if active_alerts:
+                for client in active_alerts:
+                    st.subheader(f"Client: {client['name']}")
+                    for alert in client['activeAlerts']:
+                        col1, col2 = st.columns([3, 1])
+                        with col1:
+                            st.write(f"**Emergency Type:** {alert.get('emergencyType', 'N/A')}")
+                            st.write(f"**Description:** {alert.get('description', 'N/A')}")
+                            st.write(f"**Location:** {alert.get('location', {}).get('coordinates', 'N/A')}")
+                            st.write(f"**Timestamp:** {alert.get('timestamp', 'N/A')}")
+                        with col2:
+                            if st.button("Resolve", key=f"resolve_{client['_id']}_{alert['_id']}"):
+                                if resolve_alert(client['_id'], alert['_id']):
+                                    st.success("Alert resolved successfully!")
+                                else:
+                                    st.error("Failed to resolve alert.")
+                        st.write("---")
+            else:
+                st.write("No active alerts found.")
+
+    display_alerts()
+
+    if st.button("Refresh Alerts"):
+        display_alerts()
+
+
+
+    refresh_interval = 5  # seconds
+    refresh_counter = st.empty()
+
+    while True:
+        display_alerts()
+        for remaining in range(refresh_interval, 0, -1):
+            refresh_counter.text(f"Refreshing in {remaining} seconds...")
+            time.sleep(1)
+        refresh_counter.empty()
+        st.rerun()

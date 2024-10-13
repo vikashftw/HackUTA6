@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post('/register', async (req, res) => {
     try {
-        const { username, password, userType, medicalDetails, location } = req.body;
+        const { username, password, healthInfo } = req.body;
 
         // Check if user already exists
         const existingUser = await User.findOne({ username });
@@ -21,40 +21,65 @@ router.post('/register', async (req, res) => {
         const user = new User({
             username,
             password: hashedPassword,
-            userType,
-            medicalDetails,
-            location
+            healthInfo
         });
 
         await user.save();
-        res.status(201).json({ message: 'User registered successfully' });
+
+        const token = jwt.sign(
+            { id: user._id },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+
+        res.status(201).json({ 
+            message: 'User registered successfully',
+            user: {
+                id: user._id,
+                username: user.username,
+                healthInfo: user.healthInfo
+            },
+            token
+        });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error' });
+        console.error('Registration error:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
 });
 
 router.post('/login', async (req, res) => {
-    try {
-      const { username, password } = req.body;
-      const user = await User.findOne({ username });
-      if (!user) {
-        return res.status(400).json({ message: 'Invalid credentials' });
-      }
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-        return res.status(400).json({ message: 'Invalid credentials' });
-      }
-      const token = jwt.sign(
-        { id: user._id, userType: user.userType },
-        process.env.JWT_SECRET,
-        { expiresIn: '1h' }
-      );
-      res.json({ token, userType: user.userType });
-    } catch (error) {
-      console.error('Login error:', error);
-      res.status(500).json({ message: 'Server error', error: error.message });
+  try {
+    const { username, password } = req.body;
+    
+    if (!username || !password) {
+      return res.status(400).json({ message: 'Username and password are required' });
     }
-  });
+
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    // If credentials are valid, create and send a token
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    res.json({
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        healthInfo: user.healthInfo
+      }
+    });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
 
 module.exports = router;

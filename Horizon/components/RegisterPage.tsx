@@ -1,116 +1,147 @@
-import React from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
+import React, { useState } from 'react';
+import { View, TextInput, Button, StyleSheet, ScrollView, Alert, Text } from 'react-native';
+import axios from 'axios';
+import { useUser } from './UserContext';
 
-interface RegisterPageProps {
-  goBackToProfile: () => void;
-}
+const RegisterPage: React.FC<{ goBackToProfile: () => void }> = ({ goBackToProfile }) => {
+  const { setUser } = useUser();
+  const [step, setStep] = useState(1);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [bloodType, setBloodType] = useState('');
+  const [allergies, setAllergies] = useState('');
+  const [medications, setMedications] = useState('');
+  const [chronicConditions, setChronicConditions] = useState('');
+  const [emergencyContactName, setEmergencyContactName] = useState('');
+  const [emergencyContactRelationship, setEmergencyContactRelationship] = useState('');
+  const [emergencyContactPhone, setEmergencyContactPhone] = useState('');
 
-const RegisterPage: React.FC<RegisterPageProps> = ({ goBackToProfile }) => {
-  const [firstName, setFirstName] = React.useState("");
-  const [lastName, setLastName] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [verifyPassword, setVerifyPassword] = React.useState("");
-
-  const handleRegister = () => {
-    if (password !== verifyPassword) {
-      Alert.alert("Error", "Passwords do not match. Please try again.");
-      return;
+  const handleNextStep = () => {
+    if (username && password) {
+      setStep(2);
+    } else {
+      Alert.alert('Missing Information', 'Please enter both username and password.');
     }
-    Alert.alert("Registered", `Welcome, ${firstName} ${lastName}!`);
-    goBackToProfile();
+  };
+
+  const handleRegister = async () => {
+    try {
+      const response = await axios.post('http://100.83.200.110:3000/api/auth/register', {
+        username,
+        password,
+        healthInfo: {
+          bloodType,
+          allergies: allergies.split(',').map(item => item.trim()),
+          medications: medications.split(',').map(item => item.trim()),
+          chronicConditions: chronicConditions.split(',').map(item => item.trim()),
+          emergencyContact: {
+            name: emergencyContactName,
+            relationship: emergencyContactRelationship,
+            phone: emergencyContactPhone
+          }
+        }
+      });
+
+      if (response.data.user) {
+        setUser(response.data.user);
+        Alert.alert('Registration Successful', 'You have been registered and logged in.');
+        goBackToProfile();
+      }
+    } catch (error) {
+      console.error('Registration failed:', error.response?.data || error.message);
+      Alert.alert('Registration Failed', `Error: ${error.response?.data?.message || error.message}`);
+    }
   };
 
   return (
-    <LinearGradient colors={["#0f2027", "#203a43", "#2c5364"]} style={styles.gradient}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>Register</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="First Name"
-          placeholderTextColor="#aaa"
-          value={firstName}
-          onChangeText={setFirstName}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Last Name"
-          placeholderTextColor="#aaa"
-          value={lastName}
-          onChangeText={setLastName}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          placeholderTextColor="#aaa"
-          keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          placeholderTextColor="#aaa"
-          secureTextEntry={true}
-          value={password}
-          onChangeText={setPassword}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Verify Password"
-          placeholderTextColor="#aaa"
-          secureTextEntry={true}
-          value={verifyPassword}
-          onChangeText={setVerifyPassword}
-        />
-        <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-          <Text style={styles.buttonText}>Register</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </LinearGradient>
+    <ScrollView contentContainerStyle={styles.container}>
+      {step === 1 ? (
+        <>
+          <Text style={styles.title}>Create Account</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Username"
+            value={username}
+            onChangeText={setUsername}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+          />
+          <Button title="Next" onPress={handleNextStep} />
+        </>
+      ) : (
+        <>
+          <Text style={styles.title}>Medical Information</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Blood Type"
+            value={bloodType}
+            onChangeText={setBloodType}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Allergies (comma separated)"
+            value={allergies}
+            onChangeText={setAllergies}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Medications (comma separated)"
+            value={medications}
+            onChangeText={setMedications}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Chronic Conditions (comma separated)"
+            value={chronicConditions}
+            onChangeText={setChronicConditions}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Emergency Contact Name"
+            value={emergencyContactName}
+            onChangeText={setEmergencyContactName}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Emergency Contact Relationship"
+            value={emergencyContactRelationship}
+            onChangeText={setEmergencyContactRelationship}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Emergency Contact Phone"
+            value={emergencyContactPhone}
+            onChangeText={setEmergencyContactPhone}
+          />
+          <Button title="Register" onPress={handleRegister} />
+        </>
+      )}
+      <Button title="Back to Profile" onPress={goBackToProfile} />
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  gradient: {
-    width: "100%",
-    height: "100%",
-  },
   container: {
-    alignItems: "center",
-    paddingVertical: 50,
-    paddingHorizontal: 20,
+    padding: 20,
   },
   title: {
-    fontSize: 28,
-    color: "#fff",
-    marginBottom: 30,
-    fontWeight: "bold",
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
   },
   input: {
-    width: "100%",
-    height: 50,
-    backgroundColor: "#333",
-    borderRadius: 10,
-    padding: 15,
-    marginVertical: 10,
-    color: "#fff",
-    fontSize: 16,
-  },
-  registerButton: {
-    width: "100%",
-    backgroundColor: "#4c669f",
-    padding: 15,
-    borderRadius: 25,
-    justifyContent: "center",
-    alignItems: "center",
-    marginVertical: 20,
-  },
-  buttonText: {
-    fontSize: 18,
-    color: "#fff",
-    fontWeight: "bold",
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingHorizontal: 10,
   },
 });
 

@@ -1,11 +1,5 @@
-import React, { useState } from "react";
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Dimensions,
-  Alert,
-} from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, StyleSheet, TouchableOpacity, Dimensions, Alert } from "react-native";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import EmergencyButton from "./EmergencyCall";
 import { LinearGradient } from "expo-linear-gradient";
@@ -13,7 +7,8 @@ import DisplayProfile from "./DisplayProfile";  // Default import from DisplayPr
 import DisplayList from "./DisplayList";
 import axios from "axios";
 import * as Location from "expo-location";
-import DisplaySuccess from "./DisplaySuccess";
+import { useUser } from './UserContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface FooterProps {
   goToRegister: () => void;
@@ -32,12 +27,25 @@ interface Client {
 const Footer: React.FC<FooterProps> = ({ goToRegister }) => {
   const [isDisplayProfile, setDisplayProfile] = useState(false);
   const [isDisplayList, setDisplayList] = useState(false);
-  const [isDisplaySuccess, setDisplaySuccess] = useState(false);
-  const [isClientName, setClientName] = useState("");
-  const [longitude, setLongitude] = useState<number>();
-  const [latitude, setLatitude] = useState<number>();
+  const { user, setUser } = useUser();
+  
+  useEffect(() => {
+    const checkUser = async () => {
+      const storedUser = await AsyncStorage.getItem('user');
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+    };
+    checkUser();
+  }, []);
 
   const handleEmergencyCall = async () => {
+    if (!user) {
+      Alert.alert("Error", "You must be logged in to send an alert");
+      setDisplayProfile(true);
+      return;
+    }
+
     try {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
@@ -72,6 +80,8 @@ const Footer: React.FC<FooterProps> = ({ goToRegister }) => {
           latitude,
           longitude,
         },
+        username: user.username,
+        healthInfo: user.healthInfo
       });
 
       Alert.alert(
