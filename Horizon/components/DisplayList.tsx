@@ -19,22 +19,21 @@ const DisplayList: React.FC<DisplayListProps> = ({ onClose }) => {
       >
         <FontAwesome name="hospital-o" size={30} color="white" />
       </TouchableOpacity>
-
       <TouchableOpacity id="shelter" style={styles.iconButton}>
         <Ionicons name="home-outline" size={30} color="white" />
       </TouchableOpacity>
-
       <TouchableOpacity id="police" style={styles.iconButton}>
         <FontAwesome name="user-secret" size={30} color="white" />
       </TouchableOpacity>
-
       <TouchableOpacity style={styles.closeButton} onPress={onClose}>
         <MaterialIcons name="close" size={30} color="white" />
-      </TouchableOpacity>
-
-      {isDisplayHospital && (
-        <DisplayHospitals onClose={() => setDisplayHospital(false)} />
-      )}
+      </TouchableOpacity>{" "}
+       
+      <View style={styles.displayHospitalContainer}>
+        {isDisplayHospital && (
+          <DisplayHospitals onClose={() => setDisplayHospital(false)} />
+        )}
+      </View>
     </View>
   );
 };
@@ -60,6 +59,7 @@ const styles = StyleSheet.create({
     right: 10,
     padding: 10,
   },
+  displayHospitalContainer: {},
 });
 
 export default DisplayList;
