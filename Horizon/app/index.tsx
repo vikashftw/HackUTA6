@@ -71,7 +71,7 @@ export default function Index() {
         {
           latitude,
           longitude,
-          radius: 2500,
+          radius: 50000,
         }
       );
       setDisasters(response.data || []);

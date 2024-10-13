@@ -33,7 +33,7 @@ const DisasterMap = () => {
       const response = await axios.post('http://100.83.200.110/api/disasters/nearby-disasters', {
         latitude,
         longitude,
-        radius: 2500, // adjust as needed
+        radius: 50000 // adjust as needed
       });
       setDisasters(response.data);
     } catch (error) {
